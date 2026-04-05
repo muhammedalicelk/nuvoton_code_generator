@@ -222,7 +222,8 @@ function buildFunctionBodies(state, pinDb) {
   return sections.join('\n\n');
 }
 
-export function generateCode(state, pinDb) {
+export function generateCode(state, pinDb, mcuDb) {
+  const mcu = mcuDb?.mcus?.find((item) => item.name === state.mcu);
   const globals = buildAdcGlobals(state, pinDb);
   const globalsBlock = globals ? `${globals}\n\n` : '';
   return `#include <stdio.h>\n#include "NuMicro.h"\n\n${globalsBlock}${buildFunctionPrototypes(state)}\n\n${buildFunctionBodies(state, pinDb)}\n\nint main(void)\n{\n    SYS_Init();\n${buildInitCalls(state)}\n\n${buildMainLoop(state)}\n}\n`;

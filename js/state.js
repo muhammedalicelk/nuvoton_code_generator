@@ -1,5 +1,5 @@
 export const defaultState = {
-  mcu: 'M031FB',
+  mcu: 'M031FB0AE',
   clock: {
     source: 'HIRC',
     pllEnabled: false,

@@ -1,23 +1,14 @@
 # M031 Kod Üretici
 
-Statik HTML/CSS/JS tabanlı, template kullanan M031 kod üretici aracı.
+Bu sürümde MCU saat profilleri, kullanıcının paylaştığı NuTool-ClockConfigure içeriklerinden alınarak genişletildi.
 
-## Bu sürümde
-- UART0 pin kombinasyonları gerçek RX/TX seti olarak seçilir.
-- ADC çoklu kanal seçimi desteklenir.
-- ADC kodu UART kullanmadan global değişkenlere veri yazar.
-- ADC için `ADC0_Init`, `ADC0_Read` ve `ADC_IRQHandler` üretilir.
-- ADC pinleri için MFP, `GPIO_SetMode` ve `GPIO_DISABLE_DIGITAL_PATH` satırları otomatik oluşur.
+Öne çıkanlar:
+- M031 ve M031BT chip listesi eklendi
+- Paket bilgisi ve maksimum HCLK bilgisi gösteriliyor
+- Kod çıktısına seçilen chip bilgisi ekleniyor
+- ADC, UART0 ve TIMER0 akışı korunuyor
 
-## Yayın
-GitHub Pages ile doğrudan yayınlanabilir.
-
-
-## v5 pin database
-- UART0 pin setleri `sys.h` içindeki mevcut MFP makrolarına göre genişletildi.
-- ADC kanalları `ADC0_CH0..ADC0_CH15 -> PB.0..PB.15` olacak şekilde düzeltildi.
-
-
-## Son güncelleme
-- UART baudrate artık sadece klasik seçeneklerden seçilir: 9600, 19200, 38400, 57600, 115200.
-- sys.h'a göre ADC ST pinleri veri tabanına eklendi: PC.1, PC.13, PD.12, PF.5, PG.15.
+Not:
+- Pin listesi şu an ortak SYS tabanından geliyor
+- Paket bazlı fiziksel pin filtreleme henüz aktif değil
+- Bunun için bir sonraki adımda NuTool-PinConfigure verisi entegre edilmeli

@@ -1,12 +1,540 @@
 {
   "mcus": [
     {
-      "name": "M031FB",
-      "displayName": "M031FB",
+      "name": "M031FB0AE",
+      "displayName": "M031FB0AE (TSSOP20)",
+      "package": "TSSOP20",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031FC1AE",
+      "displayName": "M031FC1AE (TSSOP20)",
+      "package": "TSSOP20",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031EB0AE",
+      "displayName": "M031EB0AE (TSSOP28)",
+      "package": "TSSOP28",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031EC1AE",
+      "displayName": "M031EC1AE (TSSOP28)",
+      "package": "TSSOP28",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031TB0AE",
+      "displayName": "M031TB0AE (QFN33)",
+      "package": "QFN33",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031TC1AE",
+      "displayName": "M031TC1AE (QFN33)",
+      "package": "QFN33",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031TD2AE",
+      "displayName": "M031TD2AE (QFN33)",
+      "package": "QFN33",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031TE3AE",
+      "displayName": "M031TE3AE (QFN33)",
+      "package": "QFN33",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031LC2AE",
+      "displayName": "M031LC2AE (LQFP48)",
+      "package": "LQFP48",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031LD2AE",
+      "displayName": "M031LD2AE (LQFP48)",
+      "package": "LQFP48",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031LE3AE",
+      "displayName": "M031LE3AE (LQFP48)",
+      "package": "LQFP48",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031SC2AE",
+      "displayName": "M031SC2AE (LQFP64)",
+      "package": "LQFP64",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031SD2AE",
+      "displayName": "M031SD2AE (LQFP64)",
+      "package": "LQFP64",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031SE3AE",
+      "displayName": "M031SE3AE (LQFP64)",
+      "package": "LQFP64",
+      "family": "M031",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031LG6AE",
+      "displayName": "M031LG6AE (LQFP48)",
+      "package": "LQFP48",
+      "family": "M031",
       "maxHclk": 72000000,
-      "clockSources": ["HIRC", "HXT"],
-      "hclkOptions": [12000000, 24000000, 48000000, 72000000],
-      "peripherals": ["UART0", "TIMER0", "ADC"]
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000,
+        72000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031SG6AE",
+      "displayName": "M031SG6AE (LQFP64)",
+      "package": "LQFP64",
+      "family": "M031",
+      "maxHclk": 72000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000,
+        72000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031KG6AE",
+      "displayName": "M031KG6AE (LQFP128)",
+      "package": "LQFP128",
+      "family": "M031",
+      "maxHclk": 72000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000,
+        72000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031LG8AE",
+      "displayName": "M031LG8AE (LQFP48)",
+      "package": "LQFP48",
+      "family": "M031",
+      "maxHclk": 72000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000,
+        72000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031SG8AE",
+      "displayName": "M031SG8AE (LQFP64)",
+      "package": "LQFP64",
+      "family": "M031",
+      "maxHclk": 72000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000,
+        72000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031KG8AE",
+      "displayName": "M031KG8AE (LQFP128)",
+      "package": "LQFP128",
+      "family": "M031",
+      "maxHclk": 72000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000,
+        72000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031SIAAE",
+      "displayName": "M031SIAAE (LQFP64)",
+      "package": "LQFP64",
+      "family": "M031",
+      "maxHclk": 72000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000,
+        72000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031KIAAE",
+      "displayName": "M031KIAAE (LQFP128)",
+      "package": "LQFP128",
+      "family": "M031",
+      "maxHclk": 72000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000,
+        72000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031BTYD2AN",
+      "displayName": "M031BTYD2AN (QFN48)",
+      "package": "QFN48",
+      "family": "M031BT",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
+    },
+    {
+      "name": "M031BTYE3AN",
+      "displayName": "M031BTYE3AN (QFN48)",
+      "package": "QFN48",
+      "family": "M031BT",
+      "maxHclk": 48000000,
+      "clockSources": [
+        "HIRC",
+        "HXT"
+      ],
+      "hclkOptions": [
+        12000000,
+        24000000,
+        48000000
+      ],
+      "peripherals": [
+        "UART0",
+        "TIMER0",
+        "ADC"
+      ],
+      "clockProfile": "NuTool-ClockConfigure import"
     }
   ]
 }

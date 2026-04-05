@@ -24,6 +24,8 @@ export function validateConfig(state, pinDb, mcuDb) {
     warnings.push('PLL kapalıyken 12 MHz üzeri HCLK seçimi doğrudan karşılanmayabilir.');
   }
 
+  warnings.push('Bu sürümde pin listesi package bazlı filtrelenmiyor. Küçük paket seçtiysen fiziksel pinleri ayrıca kontrol et.');
+
   if (state.peripherals.timer0.enabled && Number(state.peripherals.timer0.frequency) <= 0) {
     errors.push('Timer frekansı 0 veya negatif olamaz.');
   }
@@ -89,7 +91,8 @@ export function validateConfig(state, pinDb, mcuDb) {
     }
   }
 
-  messages.push(`MCU: ${state.mcu}`);
+  messages.push(`MCU: ${mcu.name} / Paket: ${mcu.package}`);
+  messages.push(`Clock profili: ${mcu.clockProfile}`);
   messages.push(`Clock: ${state.clock.source} / PLL ${state.clock.pllEnabled ? 'Açık' : 'Kapalı'} / HCLK ${state.clock.hclk} Hz`);
 
   return { valid: errors.length === 0, errors, warnings, messages };

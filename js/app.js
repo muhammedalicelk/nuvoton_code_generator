@@ -1,7 +1,7 @@
-import { cloneDefaultState } from './state.js?v=9';
-import { validateConfig } from './rules.js?v=9';
-import { generateCode } from './generator.js?v=9';
-import { setOptions, showMessages, downloadFile } from './ui.js?v=9';
+import { cloneDefaultState } from './state.js?v=10';
+import { validateConfig } from './rules.js?v=10';
+import { generateCode } from './generator.js?v=10';
+import { setOptions, showMessages, downloadFile } from './ui.js?v=10';
 
 const state = cloneDefaultState();
 let mcuDb;
@@ -10,6 +10,7 @@ let generatedCode = '';
 
 const els = {
   mcuSelect: document.getElementById('mcuSelect'),
+  mcuMeta: document.getElementById('mcuMeta'),
   clockSourceSelect: document.getElementById('clockSourceSelect'),
   pllSelect: document.getElementById('pllSelect'),
   hclkSelect: document.getElementById('hclkSelect'),
@@ -50,6 +51,34 @@ async function loadData() {
   pinDb = await pinRes.json();
 }
 
+function getCurrentMcu() {
+  return mcuDb.mcus.find((item) => item.name === state.mcu) || mcuDb.mcus[0];
+}
+
+function renderMcuMeta() {
+  const mcu = getCurrentMcu();
+  els.mcuMeta.innerHTML = [
+    `<div><strong>Paket:</strong> ${mcu.package}</div>`,
+    `<div><strong>Aile:</strong> ${mcu.family}</div>`,
+    `<div><strong>Maks. HCLK:</strong> ${mcu.maxHclk.toLocaleString('tr-TR')} Hz</div>`,
+    `<div><strong>Kaynak:</strong> ${mcu.clockProfile}</div>`
+  ].join('');
+}
+
+function refreshMcuDependentOptions() {
+  const mcu = getCurrentMcu();
+  setOptions(els.clockSourceSelect, mcu.clockSources);
+  setOptions(els.hclkSelect, mcu.hclkOptions);
+
+  if (!mcu.clockSources.includes(state.clock.source)) {
+    state.clock.source = mcu.clockSources[0];
+  }
+  if (!mcu.hclkOptions.includes(state.clock.hclk)) {
+    state.clock.hclk = mcu.hclkOptions[mcu.hclkOptions.length - 1];
+  }
+  renderMcuMeta();
+}
+
 function renderAdcChannelList() {
   els.adcChannelList.innerHTML = '';
   pinDb.adcChannels.forEach((channel, index) => {
@@ -71,15 +100,14 @@ function renderAdcChannelList() {
 
 function fillStaticOptions() {
   setOptions(els.mcuSelect, mcuDb.mcus.map((item) => ({ value: item.name, label: item.displayName })));
-  const mcu = mcuDb.mcus.find((item) => item.name === state.mcu);
-  setOptions(els.clockSourceSelect, mcu.clockSources);
-  setOptions(els.hclkSelect, mcu.hclkOptions);
   setOptions(els.uartPinSelect, pinDb.uart0Options, 'index', 'label');
   setOptions(els.adcStPinSelect, pinDb.adcStOptions, 'index', 'label');
+  refreshMcuDependentOptions();
   renderAdcChannelList();
 }
 
 function syncFormFromState() {
+  refreshMcuDependentOptions();
   els.mcuSelect.value = state.mcu;
   els.clockSourceSelect.value = state.clock.source;
   els.pllSelect.value = String(state.clock.pllEnabled);
@@ -107,6 +135,7 @@ function syncFormFromState() {
 
 function syncStateFromForm() {
   state.mcu = els.mcuSelect.value;
+  refreshMcuDependentOptions();
   state.clock.source = els.clockSourceSelect.value;
   state.clock.pllEnabled = els.pllSelect.value === 'true';
   state.clock.hclk = Number(els.hclkSelect.value);
@@ -131,7 +160,7 @@ function render() {
   showMessages(els.messages, result);
 
   if (result.valid) {
-    generatedCode = generateCode(state, pinDb);
+    generatedCode = generateCode(state, pinDb, mcuDb);
     els.codePreview.textContent = generatedCode;
     els.statusBadge.textContent = 'Geçerli';
     els.statusBadge.className = 'badge ok';
@@ -200,6 +229,9 @@ function bindEvents() {
     const imported = JSON.parse(text);
     Object.keys(state).forEach((key) => delete state[key]);
     Object.assign(state, cloneDefaultState(), imported);
+    if (!mcuDb.mcus.some((item) => item.name === state.mcu)) {
+      state.mcu = cloneDefaultState().mcu;
+    }
     render();
   });
 

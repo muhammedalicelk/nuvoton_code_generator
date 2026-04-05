@@ -27,6 +27,7 @@
       <div class="field-group">
         <label for="mcuSelect">1. MCU</label>
         <select id="mcuSelect"></select>
+        <div id="mcuMeta" class="meta-box"></div>
       </div>
 
       <div class="field-group">
@@ -46,8 +47,8 @@
           <label for="hclkSelect">HCLK</label>
           <select id="hclkSelect"></select>
         </div>
-        <p class="helper-text">ADC sonuçları global değişkenlere yazılır. Birden fazla kanal seçebilirsin. UART kullanılmaz.</p>
       </div>
+      <p class="helper-text">Clock MCU listesi, senin paylaştığın NuTool-ClockConfigure M031 / M031BT içeriklerinden alındı. Pin tarafı şimdilik ortak SYS tabanı ile gidiyor.</p>
 
       <div class="section-block">
         <h3>3. Çevreseller</h3>
@@ -158,6 +159,6 @@
     </section>
   </main>
 
-  <script type="module" src="js/app.js?v=9"></script>
+  <script type="module" src="js/app.js?v=10"></script>
 </body>
 </html>
