@@ -11,3 +11,8 @@ Statik HTML/CSS/JS tabanlı, template kullanan M031 kod üretici aracı.
 
 ## Yayın
 GitHub Pages ile doğrudan yayınlanabilir.
+
+
+## v5 pin database
+- UART0 pin setleri `sys.h` içindeki mevcut MFP makrolarına göre genişletildi.
+- ADC kanalları `ADC0_CH0..ADC0_CH15 -> PB.0..PB.15` olacak şekilde düzeltildi.

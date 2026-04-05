@@ -1,7 +1,7 @@
-import { cloneDefaultState } from './state.js?v=4';
-import { validateConfig } from './rules.js?v=4';
-import { generateCode } from './generator.js?v=4';
-import { setOptions, showMessages, downloadFile } from './ui.js?v=4';
+import { cloneDefaultState } from './state.js?v=5';
+import { validateConfig } from './rules.js?v=5';
+import { generateCode } from './generator.js?v=5';
+import { setOptions, showMessages, downloadFile } from './ui.js?v=5';
 
 const state = cloneDefaultState();
 let mcuDb;

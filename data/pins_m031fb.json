@@ -4,41 +4,329 @@
       "label": "PA.0 (RXD) / PA.1 (TXD)",
       "register": "GPA_MFPL",
       "pins": [
-        {"pin": "PA.0", "mask": "SYS_GPA_MFPL_PA0MFP_Msk", "value": "SYS_GPA_MFPL_PA0MFP_UART0_RXD", "signal": "UART0_RXD"},
-        {"pin": "PA.1", "mask": "SYS_GPA_MFPL_PA1MFP_Msk", "value": "SYS_GPA_MFPL_PA1MFP_UART0_TXD", "signal": "UART0_TXD"}
+        {
+          "pin": "PA.0",
+          "mask": "SYS_GPA_MFPL_PA0MFP_Msk",
+          "value": "SYS_GPA_MFPL_PA0MFP_UART0_RXD",
+          "signal": "UART0_RXD"
+        },
+        {
+          "pin": "PA.1",
+          "mask": "SYS_GPA_MFPL_PA1MFP_Msk",
+          "value": "SYS_GPA_MFPL_PA1MFP_UART0_TXD",
+          "signal": "UART0_TXD"
+        }
       ]
     },
     {
       "label": "PA.4 (RXD) / PA.5 (TXD)",
       "register": "GPA_MFPL",
       "pins": [
-        {"pin": "PA.4", "mask": "SYS_GPA_MFPL_PA4MFP_Msk", "value": "SYS_GPA_MFPL_PA4MFP_UART0_RXD", "signal": "UART0_RXD"},
-        {"pin": "PA.5", "mask": "SYS_GPA_MFPL_PA5MFP_Msk", "value": "SYS_GPA_MFPL_PA5MFP_UART0_TXD", "signal": "UART0_TXD"}
+        {
+          "pin": "PA.4",
+          "mask": "SYS_GPA_MFPL_PA4MFP_Msk",
+          "value": "SYS_GPA_MFPL_PA4MFP_UART0_RXD",
+          "signal": "UART0_RXD"
+        },
+        {
+          "pin": "PA.5",
+          "mask": "SYS_GPA_MFPL_PA5MFP_Msk",
+          "value": "SYS_GPA_MFPL_PA5MFP_UART0_TXD",
+          "signal": "UART0_TXD"
+        }
       ]
     },
     {
       "label": "PA.6 (RXD) / PA.7 (TXD)",
       "register": "GPA_MFPL",
       "pins": [
-        {"pin": "PA.6", "mask": "SYS_GPA_MFPL_PA6MFP_Msk", "value": "SYS_GPA_MFPL_PA6MFP_UART0_RXD", "signal": "UART0_RXD"},
-        {"pin": "PA.7", "mask": "SYS_GPA_MFPL_PA7MFP_Msk", "value": "SYS_GPA_MFPL_PA7MFP_UART0_TXD", "signal": "UART0_TXD"}
+        {
+          "pin": "PA.6",
+          "mask": "SYS_GPA_MFPL_PA6MFP_Msk",
+          "value": "SYS_GPA_MFPL_PA6MFP_UART0_RXD",
+          "signal": "UART0_RXD"
+        },
+        {
+          "pin": "PA.7",
+          "mask": "SYS_GPA_MFPL_PA7MFP_Msk",
+          "value": "SYS_GPA_MFPL_PA7MFP_UART0_TXD",
+          "signal": "UART0_TXD"
+        }
+      ]
+    },
+    {
+      "label": "PA.15 (RXD) / PA.14 (TXD)",
+      "register": "GPA_MFPH",
+      "pins": [
+        {
+          "pin": "PA.15",
+          "mask": "SYS_GPA_MFPH_PA15MFP_Msk",
+          "value": "SYS_GPA_MFPH_PA15MFP_UART0_RXD",
+          "signal": "UART0_RXD"
+        },
+        {
+          "pin": "PA.14",
+          "mask": "SYS_GPA_MFPH_PA14MFP_Msk",
+          "value": "SYS_GPA_MFPH_PA14MFP_UART0_TXD",
+          "signal": "UART0_TXD"
+        }
+      ]
+    },
+    {
+      "label": "PB.8 (RXD) / PB.9 (TXD)",
+      "register": "GPB_MFPH",
+      "pins": [
+        {
+          "pin": "PB.8",
+          "mask": "SYS_GPB_MFPH_PB8MFP_Msk",
+          "value": "SYS_GPB_MFPH_PB8MFP_UART0_RXD",
+          "signal": "UART0_RXD"
+        },
+        {
+          "pin": "PB.9",
+          "mask": "SYS_GPB_MFPH_PB9MFP_Msk",
+          "value": "SYS_GPB_MFPH_PB9MFP_UART0_TXD",
+          "signal": "UART0_TXD"
+        }
       ]
     },
     {
       "label": "PB.12 (RXD) / PB.13 (TXD)",
       "register": "GPB_MFPH",
       "pins": [
-        {"pin": "PB.12", "mask": "SYS_GPB_MFPH_PB12MFP_Msk", "value": "SYS_GPB_MFPH_PB12MFP_UART0_RXD", "signal": "UART0_RXD"},
-        {"pin": "PB.13", "mask": "SYS_GPB_MFPH_PB13MFP_Msk", "value": "SYS_GPB_MFPH_PB13MFP_UART0_TXD", "signal": "UART0_TXD"}
+        {
+          "pin": "PB.12",
+          "mask": "SYS_GPB_MFPH_PB12MFP_Msk",
+          "value": "SYS_GPB_MFPH_PB12MFP_UART0_RXD",
+          "signal": "UART0_RXD"
+        },
+        {
+          "pin": "PB.13",
+          "mask": "SYS_GPB_MFPH_PB13MFP_Msk",
+          "value": "SYS_GPB_MFPH_PB13MFP_UART0_TXD",
+          "signal": "UART0_TXD"
+        }
+      ]
+    },
+    {
+      "label": "PC.11 (RXD) / PC.12 (TXD)",
+      "register": "GPC_MFPH",
+      "pins": [
+        {
+          "pin": "PC.11",
+          "mask": "SYS_GPC_MFPH_PC11MFP_Msk",
+          "value": "SYS_GPC_MFPH_PC11MFP_UART0_RXD",
+          "signal": "UART0_RXD"
+        },
+        {
+          "pin": "PC.12",
+          "mask": "SYS_GPC_MFPH_PC12MFP_Msk",
+          "value": "SYS_GPC_MFPH_PC12MFP_UART0_TXD",
+          "signal": "UART0_TXD"
+        }
+      ]
+    },
+    {
+      "label": "PD.2 (RXD) / PD.3 (TXD)",
+      "register": "GPD_MFPL",
+      "pins": [
+        {
+          "pin": "PD.2",
+          "mask": "SYS_GPD_MFPL_PD2MFP_Msk",
+          "value": "SYS_GPD_MFPL_PD2MFP_UART0_RXD",
+          "signal": "UART0_RXD"
+        },
+        {
+          "pin": "PD.3",
+          "mask": "SYS_GPD_MFPL_PD3MFP_Msk",
+          "value": "SYS_GPD_MFPL_PD3MFP_UART0_TXD",
+          "signal": "UART0_TXD"
+        }
+      ]
+    },
+    {
+      "label": "PF.1 (RXD) / PF.0 (TXD)",
+      "register": "GPF_MFPL",
+      "pins": [
+        {
+          "pin": "PF.1",
+          "mask": "SYS_GPF_MFPL_PF1MFP_Msk",
+          "value": "SYS_GPF_MFPL_PF1MFP_UART0_RXD",
+          "signal": "UART0_RXD"
+        },
+        {
+          "pin": "PF.0",
+          "mask": "SYS_GPF_MFPL_PF0MFP_Msk",
+          "value": "SYS_GPF_MFPL_PF0MFP_UART0_TXD",
+          "signal": "UART0_TXD"
+        }
+      ]
+    },
+    {
+      "label": "PF.2 (RXD) / PF.3 (TXD)",
+      "register": "GPF_MFPL",
+      "pins": [
+        {
+          "pin": "PF.2",
+          "mask": "SYS_GPF_MFPL_PF2MFP_Msk",
+          "value": "SYS_GPF_MFPL_PF2MFP_UART0_RXD",
+          "signal": "UART0_RXD"
+        },
+        {
+          "pin": "PF.3",
+          "mask": "SYS_GPF_MFPL_PF3MFP_Msk",
+          "value": "SYS_GPF_MFPL_PF3MFP_UART0_TXD",
+          "signal": "UART0_TXD"
+        }
+      ]
+    },
+    {
+      "label": "PH.11 (RXD) / PH.10 (TXD)",
+      "register": "GPH_MFPH",
+      "pins": [
+        {
+          "pin": "PH.11",
+          "mask": "SYS_GPH_MFPH_PH11MFP_Msk",
+          "value": "SYS_GPH_MFPH_PH11MFP_UART0_RXD",
+          "signal": "UART0_RXD"
+        },
+        {
+          "pin": "PH.10",
+          "mask": "SYS_GPH_MFPH_PH10MFP_Msk",
+          "value": "SYS_GPH_MFPH_PH10MFP_UART0_TXD",
+          "signal": "UART0_TXD"
+        }
       ]
     }
   ],
   "adcChannels": [
-    {"label": "ADC_CH0 -> PA.0", "channel": 0, "pin": "PA.0", "register": "GPA_MFPL", "mask": "SYS_GPA_MFPL_PA0MFP_Msk", "value": "SYS_GPA_MFPL_PA0MFP_ADC0_CH0"},
-    {"label": "ADC_CH1 -> PA.1", "channel": 1, "pin": "PA.1", "register": "GPA_MFPL", "mask": "SYS_GPA_MFPL_PA1MFP_Msk", "value": "SYS_GPA_MFPL_PA1MFP_ADC0_CH1"},
-    {"label": "ADC_CH2 -> PB.2", "channel": 2, "pin": "PB.2", "register": "GPB_MFPL", "mask": "SYS_GPB_MFPL_PB2MFP_Msk", "value": "SYS_GPB_MFPL_PB2MFP_ADC0_CH2"},
-    {"label": "ADC_CH3 -> PB.3", "channel": 3, "pin": "PB.3", "register": "GPB_MFPL", "mask": "SYS_GPB_MFPL_PB3MFP_Msk", "value": "SYS_GPB_MFPL_PB3MFP_ADC0_CH3"},
-    {"label": "ADC_CH4 -> PB.4", "channel": 4, "pin": "PB.4", "register": "GPB_MFPL", "mask": "SYS_GPB_MFPL_PB4MFP_Msk", "value": "SYS_GPB_MFPL_PB4MFP_ADC0_CH4"},
-    {"label": "ADC_CH5 -> PB.5", "channel": 5, "pin": "PB.5", "register": "GPB_MFPL", "mask": "SYS_GPB_MFPL_PB5MFP_Msk", "value": "SYS_GPB_MFPL_PB5MFP_ADC0_CH5"}
+    {
+      "label": "ADC_CH0 -> PB.0",
+      "channel": 0,
+      "pin": "PB.0",
+      "register": "GPB_MFPL",
+      "mask": "SYS_GPB_MFPL_PB0MFP_Msk",
+      "value": "SYS_GPB_MFPL_PB0MFP_ADC0_CH0"
+    },
+    {
+      "label": "ADC_CH1 -> PB.1",
+      "channel": 1,
+      "pin": "PB.1",
+      "register": "GPB_MFPL",
+      "mask": "SYS_GPB_MFPL_PB1MFP_Msk",
+      "value": "SYS_GPB_MFPL_PB1MFP_ADC0_CH1"
+    },
+    {
+      "label": "ADC_CH2 -> PB.2",
+      "channel": 2,
+      "pin": "PB.2",
+      "register": "GPB_MFPL",
+      "mask": "SYS_GPB_MFPL_PB2MFP_Msk",
+      "value": "SYS_GPB_MFPL_PB2MFP_ADC0_CH2"
+    },
+    {
+      "label": "ADC_CH3 -> PB.3",
+      "channel": 3,
+      "pin": "PB.3",
+      "register": "GPB_MFPL",
+      "mask": "SYS_GPB_MFPL_PB3MFP_Msk",
+      "value": "SYS_GPB_MFPL_PB3MFP_ADC0_CH3"
+    },
+    {
+      "label": "ADC_CH4 -> PB.4",
+      "channel": 4,
+      "pin": "PB.4",
+      "register": "GPB_MFPL",
+      "mask": "SYS_GPB_MFPL_PB4MFP_Msk",
+      "value": "SYS_GPB_MFPL_PB4MFP_ADC0_CH4"
+    },
+    {
+      "label": "ADC_CH5 -> PB.5",
+      "channel": 5,
+      "pin": "PB.5",
+      "register": "GPB_MFPL",
+      "mask": "SYS_GPB_MFPL_PB5MFP_Msk",
+      "value": "SYS_GPB_MFPL_PB5MFP_ADC0_CH5"
+    },
+    {
+      "label": "ADC_CH6 -> PB.6",
+      "channel": 6,
+      "pin": "PB.6",
+      "register": "GPB_MFPL",
+      "mask": "SYS_GPB_MFPL_PB6MFP_Msk",
+      "value": "SYS_GPB_MFPL_PB6MFP_ADC0_CH6"
+    },
+    {
+      "label": "ADC_CH7 -> PB.7",
+      "channel": 7,
+      "pin": "PB.7",
+      "register": "GPB_MFPL",
+      "mask": "SYS_GPB_MFPL_PB7MFP_Msk",
+      "value": "SYS_GPB_MFPL_PB7MFP_ADC0_CH7"
+    },
+    {
+      "label": "ADC_CH8 -> PB.8",
+      "channel": 8,
+      "pin": "PB.8",
+      "register": "GPB_MFPH",
+      "mask": "SYS_GPB_MFPH_PB8MFP_Msk",
+      "value": "SYS_GPB_MFPH_PB8MFP_ADC0_CH8"
+    },
+    {
+      "label": "ADC_CH9 -> PB.9",
+      "channel": 9,
+      "pin": "PB.9",
+      "register": "GPB_MFPH",
+      "mask": "SYS_GPB_MFPH_PB9MFP_Msk",
+      "value": "SYS_GPB_MFPH_PB9MFP_ADC0_CH9"
+    },
+    {
+      "label": "ADC_CH10 -> PB.10",
+      "channel": 10,
+      "pin": "PB.10",
+      "register": "GPB_MFPH",
+      "mask": "SYS_GPB_MFPH_PB10MFP_Msk",
+      "value": "SYS_GPB_MFPH_PB10MFP_ADC0_CH10"
+    },
+    {
+      "label": "ADC_CH11 -> PB.11",
+      "channel": 11,
+      "pin": "PB.11",
+      "register": "GPB_MFPH",
+      "mask": "SYS_GPB_MFPH_PB11MFP_Msk",
+      "value": "SYS_GPB_MFPH_PB11MFP_ADC0_CH11"
+    },
+    {
+      "label": "ADC_CH12 -> PB.12",
+      "channel": 12,
+      "pin": "PB.12",
+      "register": "GPB_MFPH",
+      "mask": "SYS_GPB_MFPH_PB12MFP_Msk",
+      "value": "SYS_GPB_MFPH_PB12MFP_ADC0_CH12"
+    },
+    {
+      "label": "ADC_CH13 -> PB.13",
+      "channel": 13,
+      "pin": "PB.13",
+      "register": "GPB_MFPH",
+      "mask": "SYS_GPB_MFPH_PB13MFP_Msk",
+      "value": "SYS_GPB_MFPH_PB13MFP_ADC0_CH13"
+    },
+    {
+      "label": "ADC_CH14 -> PB.14",
+      "channel": 14,
+      "pin": "PB.14",
+      "register": "GPB_MFPH",
+      "mask": "SYS_GPB_MFPH_PB14MFP_Msk",
+      "value": "SYS_GPB_MFPH_PB14MFP_ADC0_CH14"
+    },
+    {
+      "label": "ADC_CH15 -> PB.15",
+      "channel": 15,
+      "pin": "PB.15",
+      "register": "GPB_MFPH",
+      "mask": "SYS_GPB_MFPH_PB15MFP_Msk",
+      "value": "SYS_GPB_MFPH_PB15MFP_ADC0_CH15"
+    }
   ]
 }
