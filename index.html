@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>M031 Kod Üretici</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>M031 Kod Üretici</h1>
+      <p>Hazır template tabanlı, AI kullanmayan konfigürasyon aracı</p>
+    </div>
+    <div class="topbar-actions">
+      <button id="resetBtn">Sıfırla</button>
+      <button id="exportConfigBtn">Config İndir</button>
+      <label class="file-label" for="importConfigInput">Config Yükle</label>
+      <input id="importConfigInput" type="file" accept="application/json" hidden />
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel form-panel">
+      <h2>Yapılandırma</h2>
+
+      <div class="field-group">
+        <label for="mcuSelect">1. MCU</label>
+        <select id="mcuSelect"></select>
+      </div>
+
+      <div class="field-group">
+        <label for="clockSourceSelect">2. Clock Source</label>
+        <select id="clockSourceSelect"></select>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label for="pllSelect">PLL</label>
+          <select id="pllSelect">
+            <option value="false">Kapalı</option>
+            <option value="true">Açık</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="hclkSelect">HCLK</label>
+          <select id="hclkSelect"></select>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3>3. Çevreseller</h3>
+        <div class="checkbox-grid">
+          <label><input type="checkbox" id="uartEnable" /> UART0</label>
+          <label><input type="checkbox" id="timerEnable" /> TIMER0</label>
+          <label><input type="checkbox" id="adcEnable" /> ADC</label>
+        </div>
+      </div>
+
+      <div class="section-block hidden" id="uartSection">
+        <h3>UART0 Ayarları</h3>
+        <div class="field-row">
+          <div class="field-group">
+            <label for="uartBaudInput">Baudrate</label>
+            <input id="uartBaudInput" type="number" min="1200" value="115200" />
+          </div>
+          <div class="field-group">
+            <label for="uartPinSelect">Pin Kombinasyonu</label>
+            <select id="uartPinSelect"></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block hidden" id="timerSection">
+        <h3>TIMER0 Ayarları</h3>
+        <div class="field-row">
+          <div class="field-group">
+            <label for="timerModeSelect">Mode</label>
+            <select id="timerModeSelect">
+              <option value="TIMER_PERIODIC_MODE">Periodic</option>
+              <option value="TIMER_ONESHOT_MODE">One-shot</option>
+              <option value="TIMER_TOGGLE_MODE">Toggle</option>
+              <option value="TIMER_CONTINUOUS_MODE">Continuous</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="timerFreqInput">Frequency (Hz)</label>
+            <input id="timerFreqInput" type="number" min="1" value="1000" />
+          </div>
+        </div>
+        <label><input type="checkbox" id="timerInterruptEnable" checked /> Interrupt aktif</label>
+      </div>
+
+      <div class="section-block hidden" id="adcSection">
+        <h3>ADC Ayarları</h3>
+        <div class="field-row">
+          <div class="field-group">
+            <label for="adcModeSelect">Mode</label>
+            <select id="adcModeSelect">
+              <option value="single">Single End</option>
+              <option value="single_cycle_scan">Single Cycle Scan</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="adcChannelSelect">Channel</label>
+            <select id="adcChannelSelect"></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3>4. Sonuç</h3>
+        <div id="messages" class="messages"></div>
+        <div class="button-row">
+          <button id="generateBtn" class="primary">Kod Üret</button>
+          <button id="downloadCodeBtn">main.c İndir</button>
+          <button id="copyCodeBtn">Kopyala</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel preview-panel">
+      <div class="preview-header">
+        <h2>Oluşan Kod</h2>
+        <span id="statusBadge" class="badge">Hazır</span>
+      </div>
+      <pre id="codePreview"></pre>
+    </section>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

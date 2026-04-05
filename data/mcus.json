@@ -1,0 +1,12 @@
+{
+  "mcus": [
+    {
+      "name": "M031FB",
+      "displayName": "M031FB",
+      "maxHclk": 72000000,
+      "clockSources": ["HIRC", "HXT"],
+      "hclkOptions": [12000000, 24000000, 48000000, 72000000],
+      "peripherals": ["UART0", "TIMER0", "ADC"]
+    }
+  ]
+}
