@@ -109,9 +109,31 @@
             </select>
           </div>
           <div class="field-group">
-            <label>Channels</label>
-            <div id="adcChannelList" class="checkbox-list"></div>
+            <label for="adcTriggerSelect">Trigger</label>
+            <select id="adcTriggerSelect">
+              <option value="software">Software Start</option>
+              <option value="stadc">External STADC</option>
+            </select>
           </div>
+        </div>
+        <div class="field-row hidden" id="adcStSection">
+          <div class="field-group">
+            <label for="adcStPinSelect">ST Pin</label>
+            <select id="adcStPinSelect"></select>
+          </div>
+          <div class="field-group">
+            <label for="adcStConditionSelect">ST Koşulu</label>
+            <select id="adcStConditionSelect">
+              <option value="ADC_LOW_LEVEL">Low Level</option>
+              <option value="ADC_HIGH_LEVEL">High Level</option>
+              <option value="ADC_FALLING_EDGE">Falling Edge</option>
+              <option value="ADC_RISING_EDGE" selected>Rising Edge</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Channels</label>
+          <div id="adcChannelList" class="checkbox-list"></div>
         </div>
         <p class="helper-text">ADC sonuçları global değişkenlere yazılır. UART kullanılmaz.</p>
       </div>
@@ -136,6 +158,6 @@
     </section>
   </main>
 
-  <script type="module" src="js/app.js?v=7"></script>
+  <script type="module" src="js/app.js?v=8"></script>
 </body>
 </html>

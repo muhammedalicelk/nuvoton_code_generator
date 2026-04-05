@@ -28,7 +28,6 @@ export function validateConfig(state, pinDb, mcuDb) {
     errors.push('Timer frekansı 0 veya negatif olamaz.');
   }
 
-  
   const usedPins = new Map();
 
   if (state.peripherals.uart0.enabled) {
@@ -54,6 +53,18 @@ export function validateConfig(state, pinDb, mcuDb) {
       }
     });
 
+    if (state.peripherals.adc.trigger === 'stadc') {
+      const stSel = pinDb.adcStOptions[state.peripherals.adc.stPinIndex];
+      if (!stSel) {
+        errors.push('ADC ST pin seçimi geçersiz.');
+      } else if (usedPins.has(stSel.pin)) {
+        errors.push(`Pin çakışması var: ${stSel.pin} hem ${usedPins.get(stSel.pin)} hem ADC_ST için seçilmiş.`);
+      } else {
+        usedPins.set(stSel.pin, 'ADC_ST');
+      }
+      warnings.push('External STADC seçildiğinde dönüşüm dış ST pininden tetiklenecek; ana döngüde software start çağrılmayacak.');
+    }
+
     if (adcSelected.length > 1 && state.peripherals.adc.mode === 'single') {
       warnings.push('Birden fazla ADC kanalı seçildiği için kod üretiminde Single Cycle Scan kullanılacak.');
     }
@@ -72,6 +83,10 @@ export function validateConfig(state, pinDb, mcuDb) {
     const adcSelected = getSelectedAdcChannels(state, pinDb);
     messages.push(`ADC kanalları: ${adcSelected.map((item) => `CH${item.channel} (${item.pin})`).join(', ')}`);
     messages.push('ADC sonuçları global değişkenlere yazılacak.');
+    if (state.peripherals.adc.trigger === 'stadc') {
+      const stSel = pinDb.adcStOptions[state.peripherals.adc.stPinIndex];
+      messages.push(`ADC ST pini: ${stSel.label} / koşul: ${state.peripherals.adc.stCondition}`);
+    }
   }
 
   messages.push(`MCU: ${state.mcu}`);

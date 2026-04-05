@@ -1,6 +1,6 @@
-import { cloneDefaultState } from './state.js?v=7';
-import { validateConfig } from './rules.js?v=7';
-import { generateCode } from './generator.js?v=7';
+import { cloneDefaultState } from './state.js?v=8';
+import { validateConfig } from './rules.js?v=8';
+import { generateCode } from './generator.js?v=8';
 import { setOptions, showMessages, downloadFile } from './ui.js?v=7';
 
 const state = cloneDefaultState();
@@ -19,12 +19,16 @@ const els = {
   uartSection: document.getElementById('uartSection'),
   timerSection: document.getElementById('timerSection'),
   adcSection: document.getElementById('adcSection'),
+  adcStSection: document.getElementById('adcStSection'),
   uartBaudSelect: document.getElementById('uartBaudSelect'),
   uartPinSelect: document.getElementById('uartPinSelect'),
   timerModeSelect: document.getElementById('timerModeSelect'),
   timerFreqInput: document.getElementById('timerFreqInput'),
   timerInterruptEnable: document.getElementById('timerInterruptEnable'),
   adcModeSelect: document.getElementById('adcModeSelect'),
+  adcTriggerSelect: document.getElementById('adcTriggerSelect'),
+  adcStPinSelect: document.getElementById('adcStPinSelect'),
+  adcStConditionSelect: document.getElementById('adcStConditionSelect'),
   adcChannelList: document.getElementById('adcChannelList'),
   generateBtn: document.getElementById('generateBtn'),
   downloadCodeBtn: document.getElementById('downloadCodeBtn'),
@@ -45,7 +49,6 @@ async function loadData() {
   mcuDb = await mcuRes.json();
   pinDb = await pinRes.json();
 }
-
 
 function renderAdcChannelList() {
   els.adcChannelList.innerHTML = '';
@@ -72,6 +75,7 @@ function fillStaticOptions() {
   setOptions(els.clockSourceSelect, mcu.clockSources);
   setOptions(els.hclkSelect, mcu.hclkOptions);
   setOptions(els.uartPinSelect, pinDb.uart0Options, 'index', 'label');
+  setOptions(els.adcStPinSelect, pinDb.adcStOptions, 'index', 'label');
   renderAdcChannelList();
 }
 
@@ -89,12 +93,16 @@ function syncFormFromState() {
   els.timerFreqInput.value = state.peripherals.timer0.frequency;
   els.timerInterruptEnable.checked = state.peripherals.timer0.interruptEnabled;
   els.adcModeSelect.value = state.peripherals.adc.mode;
+  els.adcTriggerSelect.value = state.peripherals.adc.trigger;
+  els.adcStPinSelect.value = String(state.peripherals.adc.stPinIndex);
+  els.adcStConditionSelect.value = state.peripherals.adc.stCondition;
 
   renderAdcChannelList();
 
   els.uartSection.classList.toggle('hidden', !state.peripherals.uart0.enabled);
   els.timerSection.classList.toggle('hidden', !state.peripherals.timer0.enabled);
   els.adcSection.classList.toggle('hidden', !state.peripherals.adc.enabled);
+  els.adcStSection.classList.toggle('hidden', !(state.peripherals.adc.enabled && state.peripherals.adc.trigger === 'stadc'));
 }
 
 function syncStateFromForm() {
@@ -111,37 +119,42 @@ function syncStateFromForm() {
   state.peripherals.timer0.frequency = Number(els.timerFreqInput.value);
   state.peripherals.timer0.interruptEnabled = els.timerInterruptEnable.checked;
   state.peripherals.adc.mode = els.adcModeSelect.value;
-  state.peripherals.adc.channelIndexes = Array.from(els.adcChannelList.querySelectorAll('input[type="checkbox"]:checked')).map((input) => Number(input.value));
+  state.peripherals.adc.trigger = els.adcTriggerSelect.value;
+  state.peripherals.adc.stPinIndex = Number(els.adcStPinSelect.value);
+  state.peripherals.adc.stCondition = els.adcStConditionSelect.value;
+  state.peripherals.adc.channelIndexes = Array.from(els.adcChannelList.querySelectorAll('input:checked')).map((input) => Number(input.value));
 }
 
 function render() {
   syncFormFromState();
   const result = validateConfig(state, pinDb, mcuDb);
-  showMessages(els.messages, result);
-
-  if (result.valid) {
-    generatedCode = generateCode(state, pinDb);
-    els.codePreview.textContent = generatedCode;
-    els.statusBadge.textContent = 'Geçerli';
-  } else {
-    generatedCode = '';
-    els.codePreview.textContent = 'Hatalar düzeltilmeden kod üretilemez.';
-    els.statusBadge.textContent = 'Hata var';
-  }
+  generatedCode = generateCode(state, pinDb);
+  els.codePreview.textContent = generatedCode;
+  showMessages(els.messages, result.errors, result.warnings, result.messages);
+  els.statusBadge.textContent = result.valid ? 'Geçerli' : 'Hata Var';
+  els.statusBadge.className = `badge ${result.valid ? 'ok' : 'bad'}`;
 }
 
 function bindEvents() {
   [
-    els.mcuSelect, els.clockSourceSelect, els.pllSelect, els.hclkSelect,
-    els.uartEnable, els.timerEnable, els.adcEnable, els.uartBaudSelect,
-    els.uartPinSelect, els.timerModeSelect, els.timerFreqInput,
-    els.timerInterruptEnable, els.adcModeSelect
-  ].forEach((el) => {
-    el.addEventListener('change', () => {
-      syncStateFromForm();
-      render();
-    });
-    el.addEventListener('input', () => {
+    els.mcuSelect,
+    els.clockSourceSelect,
+    els.pllSelect,
+    els.hclkSelect,
+    els.uartEnable,
+    els.timerEnable,
+    els.adcEnable,
+    els.uartBaudSelect,
+    els.uartPinSelect,
+    els.timerModeSelect,
+    els.timerFreqInput,
+    els.timerInterruptEnable,
+    els.adcModeSelect,
+    els.adcTriggerSelect,
+    els.adcStPinSelect,
+    els.adcStConditionSelect
+  ].forEach((element) => {
+    element.addEventListener('change', () => {
       syncStateFromForm();
       render();
     });
@@ -152,13 +165,8 @@ function bindEvents() {
     render();
   });
 
-  els.downloadCodeBtn.addEventListener('click', () => {
-    if (!generatedCode) return;
-    downloadFile('main.c', generatedCode);
-  });
-
+  els.downloadCodeBtn.addEventListener('click', () => downloadFile('main.c', generatedCode, 'text/plain'));
   els.copyCodeBtn.addEventListener('click', async () => {
-    if (!generatedCode) return;
     await navigator.clipboard.writeText(generatedCode);
     els.statusBadge.textContent = 'Kopyalandı';
   });
@@ -171,30 +179,22 @@ function bindEvents() {
   els.importConfigInput.addEventListener('change', async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    const text = await file.text();
-    const imported = JSON.parse(text);
-    Object.keys(state).forEach((key) => delete state[key]);
-    Object.assign(state, cloneDefaultState(), imported);
+    const data = JSON.parse(await file.text());
+    Object.assign(state, data);
     render();
   });
 
   els.resetBtn.addEventListener('click', () => {
-    const fresh = cloneDefaultState();
-    Object.keys(state).forEach((key) => delete state[key]);
-    Object.assign(state, fresh);
+    Object.assign(state, cloneDefaultState());
     render();
   });
 }
 
-async function main() {
+async function init() {
   await loadData();
   fillStaticOptions();
   bindEvents();
   render();
 }
 
-main().catch((err) => {
-  console.error(err);
-  els.codePreview.textContent = 'Uygulama başlatılırken hata oluştu.';
-  els.statusBadge.textContent = 'Başlatma hatası';
-});
+init();

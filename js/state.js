@@ -20,7 +20,10 @@ export const defaultState = {
     adc: {
       enabled: false,
       mode: 'single_cycle_scan',
-      channelIndexes: [2, 3]
+      channelIndexes: [2, 3],
+      trigger: 'software',
+      stPinIndex: 0,
+      stCondition: 'ADC_RISING_EDGE'
     }
   }
 };
