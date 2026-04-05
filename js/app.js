@@ -1,7 +1,7 @@
-import { cloneDefaultState } from './state.js?v=5';
-import { validateConfig } from './rules.js?v=5';
-import { generateCode } from './generator.js?v=5';
-import { setOptions, showMessages, downloadFile } from './ui.js?v=5';
+import { cloneDefaultState } from './state.js?v=7';
+import { validateConfig } from './rules.js?v=7';
+import { generateCode } from './generator.js?v=7';
+import { setOptions, showMessages, downloadFile } from './ui.js?v=7';
 
 const state = cloneDefaultState();
 let mcuDb;
@@ -19,7 +19,7 @@ const els = {
   uartSection: document.getElementById('uartSection'),
   timerSection: document.getElementById('timerSection'),
   adcSection: document.getElementById('adcSection'),
-  uartBaudInput: document.getElementById('uartBaudInput'),
+  uartBaudSelect: document.getElementById('uartBaudSelect'),
   uartPinSelect: document.getElementById('uartPinSelect'),
   timerModeSelect: document.getElementById('timerModeSelect'),
   timerFreqInput: document.getElementById('timerFreqInput'),
@@ -83,7 +83,7 @@ function syncFormFromState() {
   els.uartEnable.checked = state.peripherals.uart0.enabled;
   els.timerEnable.checked = state.peripherals.timer0.enabled;
   els.adcEnable.checked = state.peripherals.adc.enabled;
-  els.uartBaudInput.value = state.peripherals.uart0.baudrate;
+  els.uartBaudSelect.value = String(state.peripherals.uart0.baudrate);
   els.uartPinSelect.value = String(state.peripherals.uart0.pinIndex);
   els.timerModeSelect.value = state.peripherals.timer0.mode;
   els.timerFreqInput.value = state.peripherals.timer0.frequency;
@@ -105,7 +105,7 @@ function syncStateFromForm() {
   state.peripherals.uart0.enabled = els.uartEnable.checked;
   state.peripherals.timer0.enabled = els.timerEnable.checked;
   state.peripherals.adc.enabled = els.adcEnable.checked;
-  state.peripherals.uart0.baudrate = Number(els.uartBaudInput.value);
+  state.peripherals.uart0.baudrate = Number(els.uartBaudSelect.value);
   state.peripherals.uart0.pinIndex = Number(els.uartPinSelect.value);
   state.peripherals.timer0.mode = els.timerModeSelect.value;
   state.peripherals.timer0.frequency = Number(els.timerFreqInput.value);
@@ -133,7 +133,7 @@ function render() {
 function bindEvents() {
   [
     els.mcuSelect, els.clockSourceSelect, els.pllSelect, els.hclkSelect,
-    els.uartEnable, els.timerEnable, els.adcEnable, els.uartBaudInput,
+    els.uartEnable, els.timerEnable, els.adcEnable, els.uartBaudSelect,
     els.uartPinSelect, els.timerModeSelect, els.timerFreqInput,
     els.timerInterruptEnable, els.adcModeSelect
   ].forEach((el) => {

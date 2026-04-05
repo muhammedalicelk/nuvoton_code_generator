@@ -16,3 +16,8 @@ GitHub Pages ile doğrudan yayınlanabilir.
 ## v5 pin database
 - UART0 pin setleri `sys.h` içindeki mevcut MFP makrolarına göre genişletildi.
 - ADC kanalları `ADC0_CH0..ADC0_CH15 -> PB.0..PB.15` olacak şekilde düzeltildi.
+
+
+## Son güncelleme
+- UART baudrate artık sadece klasik seçeneklerden seçilir: 9600, 19200, 38400, 57600, 115200.
+- sys.h'a göre ADC ST pinleri veri tabanına eklendi: PC.1, PC.13, PD.12, PF.5, PG.15.

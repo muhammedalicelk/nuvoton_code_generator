@@ -28,10 +28,7 @@ export function validateConfig(state, pinDb, mcuDb) {
     errors.push('Timer frekansı 0 veya negatif olamaz.');
   }
 
-  if (state.peripherals.uart0.enabled && Number(state.peripherals.uart0.baudrate) < 1200) {
-    warnings.push('UART baudrate oldukça düşük görünüyor.');
-  }
-
+  
   const usedPins = new Map();
 
   if (state.peripherals.uart0.enabled) {

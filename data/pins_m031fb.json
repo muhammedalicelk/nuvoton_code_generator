@@ -328,5 +328,42 @@
       "mask": "SYS_GPB_MFPH_PB15MFP_Msk",
       "value": "SYS_GPB_MFPH_PB15MFP_ADC0_CH15"
     }
+  ],
+  "adcStOptions": [
+    {
+      "label": "PC.1 (ADC_ST)",
+      "pin": "PC.1",
+      "register": "GPC_MFPL",
+      "mask": "SYS_GPC_MFPL_PC1MFP_Msk",
+      "value": "SYS_GPC_MFPL_PC1MFP_ADC0_ST"
+    },
+    {
+      "label": "PC.13 (ADC_ST)",
+      "pin": "PC.13",
+      "register": "GPC_MFPH",
+      "mask": "SYS_GPC_MFPH_PC13MFP_Msk",
+      "value": "SYS_GPC_MFPH_PC13MFP_ADC0_ST"
+    },
+    {
+      "label": "PD.12 (ADC_ST)",
+      "pin": "PD.12",
+      "register": "GPD_MFPH",
+      "mask": "SYS_GPD_MFPH_PD12MFP_Msk",
+      "value": "SYS_GPD_MFPH_PD12MFP_ADC0_ST"
+    },
+    {
+      "label": "PF.5 (ADC_ST)",
+      "pin": "PF.5",
+      "register": "GPF_MFPL",
+      "mask": "SYS_GPF_MFPL_PF5MFP_Msk",
+      "value": "SYS_GPF_MFPL_PF5MFP_ADC0_ST"
+    },
+    {
+      "label": "PG.15 (ADC_ST)",
+      "pin": "PG.15",
+      "register": "GPG_MFPH",
+      "mask": "SYS_GPG_MFPH_PG15MFP_Msk",
+      "value": "SYS_GPG_MFPH_PG15MFP_ADC0_ST"
+    }
   ]
 }
