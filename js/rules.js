@@ -13,8 +13,8 @@ export function validateConfig(state, pinDb, mcuDb) {
     errors.push(`HCLK değeri MCU sınırını aşıyor. Maksimum: ${mcu.maxHclk} Hz`);
   }
 
-  if (state.clock.source === 'HXT' && state.clock.pllEnabled === false && state.clock.hclk > 12000000) {
-    warnings.push('HXT seçili ve PLL kapalı. Bu durumda yüksek HCLK değeri gerçek donanım akışında ek clock ayarı gerektirebilir.');
+  if (!state.clock.pllEnabled && state.clock.hclk > 12000000) {
+    warnings.push('PLL kapalıyken seçilen HCLK gerçek donanımda her zaman doğrudan sağlanamayabilir. Clock doğrulaması sonraki sürümde sıkılaştırılacak.');
   }
 
   if (state.peripherals.timer0.enabled && Number(state.peripherals.timer0.frequency) <= 0) {
@@ -30,10 +30,9 @@ export function validateConfig(state, pinDb, mcuDb) {
   if (state.peripherals.uart0.enabled) {
     const uartSel = pinDb.uart0Options[state.peripherals.uart0.pinIndex];
     if (!uartSel) {
-      errors.push('UART0 pin seçimi geçersiz.');
+      errors.push('UART0 pin kombinasyonu geçersiz.');
     } else {
-      usedPins.set(uartSel.rxPin, 'UART0_RXD');
-      usedPins.set(uartSel.txPin, 'UART0_TXD');
+      uartSel.pins.forEach((pin) => usedPins.set(pin.pin, pin.signal));
     }
   }
 
@@ -50,6 +49,16 @@ export function validateConfig(state, pinDb, mcuDb) {
 
   if (!state.peripherals.uart0.enabled && !state.peripherals.timer0.enabled && !state.peripherals.adc.enabled) {
     warnings.push('Hiç çevresel seçilmedi. Sadece temel clock iskeleti üretilecek.');
+  }
+
+  if (state.peripherals.uart0.enabled) {
+    const uartSel = pinDb.uart0Options[state.peripherals.uart0.pinIndex];
+    messages.push(`UART0 pin seti: ${uartSel.label}`);
+  }
+
+  if (state.peripherals.adc.enabled) {
+    const adcSel = pinDb.adcChannels[state.peripherals.adc.channelIndex];
+    messages.push(`ADC pini: ${adcSel.label}`);
   }
 
   messages.push(`MCU: ${state.mcu}`);

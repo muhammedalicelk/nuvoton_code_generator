@@ -13,39 +13,76 @@ function buildClockCode(state) {
   if (state.clock.pllEnabled) {
     lines.push('    /* Configure PLL and switch HCLK to PLL */');
     lines.push(`    CLK_SetCoreClock(${state.clock.hclk});`);
+  } else if (state.clock.source === 'HIRC') {
+    lines.push('    /* Switch HCLK source to HIRC */');
+    lines.push('    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_HIRC, CLK_CLKDIV0_HCLK(1));');
   } else {
-    if (state.clock.source === 'HIRC') {
-      lines.push('    /* Switch HCLK source to HIRC */');
-      lines.push('    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_HIRC, CLK_CLKDIV0_HCLK(1));');
-    } else {
-      lines.push('    /* Switch HCLK source to HXT */');
-      lines.push('    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_HXT, CLK_CLKDIV0_HCLK(1));');
-    }
+    lines.push('    /* Switch HCLK source to HXT */');
+    lines.push('    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_HXT, CLK_CLKDIV0_HCLK(1));');
   }
 
   return lines.join('\n');
 }
 
-function buildMultiFunctionCode(state, pinDb) {
+function buildModuleClockCode(state) {
   const lines = [];
+  if (state.peripherals.uart0.enabled) {
+    lines.push('    CLK_EnableModuleClock(UART0_MODULE);');
+    lines.push('    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HIRC, CLK_CLKDIV0_UART0(1));');
+  }
+  if (state.peripherals.timer0.enabled) {
+    lines.push('    CLK_EnableModuleClock(TMR0_MODULE);');
+    lines.push('    CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0SEL_HCLK, 0);');
+  }
+  if (state.peripherals.adc.enabled) {
+    lines.push('    CLK_EnableModuleClock(ADC_MODULE);');
+    lines.push('    CLK_SetModuleClock(ADC_MODULE, CLK_CLKSEL1_ADCSEL_HIRC, CLK_CLKDIV0_ADC(1));');
+  }
+  return lines.join('\n') || '    /* No module clock selected */';
+}
+
+function addPinAssignment(groups, registerName, mask, value) {
+  if (!groups.has(registerName)) {
+    groups.set(registerName, { masks: [], values: [] });
+  }
+  groups.get(registerName).masks.push(mask);
+  groups.get(registerName).values.push(value);
+}
+
+function buildMfpGroups(state, pinDb) {
+  const groups = new Map();
 
   if (state.peripherals.uart0.enabled) {
     const uartSel = pinDb.uart0Options[state.peripherals.uart0.pinIndex];
-    lines.push('    /* UART0 multi-function */');
-    lines.push(`    SET_UART0_RXD_${uartSel.rxPin.replace('.', '')}(); /* Replace with exact BSP macro if needed */`);
-    lines.push(`    SET_UART0_TXD_${uartSel.txPin.replace('.', '')}(); /* Replace with exact BSP macro if needed */`);
-    lines.push(`    /* Raw MFP macros: ${uartSel.rxFunc}, ${uartSel.txFunc} */`);
+    uartSel.pins.forEach((pin) => addPinAssignment(groups, uartSel.register, pin.mask, pin.value));
   }
 
   if (state.peripherals.adc.enabled) {
     const adcSel = pinDb.adcChannels[state.peripherals.adc.channelIndex];
-    lines.push('    /* ADC multi-function */');
-    lines.push(`    /* Raw MFP macro: ${adcSel.func} */`);
-    lines.push(`    GPIO_DISABLE_DIGITAL_PATH(${adcSel.pin.split('.')[0]}, BIT${adcSel.pin.split('.')[1]}); /* Adapt by BSP naming if required */`);
+    addPinAssignment(groups, adcSel.register, adcSel.mask, adcSel.value);
   }
 
-  if (lines.length === 0) {
-    lines.push('    /* No peripheral pin configuration selected */');
+  return groups;
+}
+
+function buildMfpCode(state, pinDb) {
+  const groups = buildMfpGroups(state, pinDb);
+  if (groups.size === 0) {
+    return '    /* No peripheral pin configuration selected */';
+  }
+
+  const lines = [];
+  for (const [registerName, group] of groups.entries()) {
+    lines.push(`    SYS->${registerName} = (SYS->${registerName} & ~(${group.masks.join(' | ')})) |`);
+    lines.push(`                      (${group.values.join(' | ')});`);
+  }
+
+  if (state.peripherals.adc.enabled) {
+    const adcSel = pinDb.adcChannels[state.peripherals.adc.channelIndex];
+    const [port, bit] = adcSel.pin.split('.');
+    lines.push('');
+    lines.push('    /* Disable digital path for ADC pin */');
+    lines.push(`    GPIO_DISABLE_DIGITAL_PATH(${port}, BIT${bit});`);
   }
 
   return lines.join('\n');
@@ -70,7 +107,7 @@ function buildFunctionPrototypes(state) {
 function buildFunctionBodies(state, pinDb) {
   const sections = [];
 
-  sections.push(`void SYS_Init(void)\n{\n    SYS_UnlockReg();\n\n${buildClockCode(state)}\n\n    /* Enable peripheral module clocks */\n${buildModuleClockCode(state)}\n\n${buildMultiFunctionCode(state, pinDb)}\n\n    SYS_LockReg();\n}`);
+  sections.push(`void SYS_Init(void)\n{\n    SYS_UnlockReg();\n\n${buildClockCode(state)}\n\n    /* Enable peripheral module clocks */\n${buildModuleClockCode(state)}\n\n    /* Multi-function I/O */\n${buildMfpCode(state, pinDb)}\n\n    SYS_LockReg();\n}`);
 
   if (state.peripherals.uart0.enabled) {
     sections.push(`void UART0_Init(void)\n{\n    UART_Open(UART0, ${state.peripherals.uart0.baudrate});\n}`);
@@ -90,23 +127,6 @@ function buildFunctionBodies(state, pinDb) {
   }
 
   return sections.join('\n\n');
-}
-
-function buildModuleClockCode(state) {
-  const lines = [];
-  if (state.peripherals.uart0.enabled) {
-    lines.push('    CLK_EnableModuleClock(UART0_MODULE);');
-    lines.push('    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HIRC, CLK_CLKDIV0_UART0(1));');
-  }
-  if (state.peripherals.timer0.enabled) {
-    lines.push('    CLK_EnableModuleClock(TMR0_MODULE);');
-    lines.push('    CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0SEL_HCLK, 0);');
-  }
-  if (state.peripherals.adc.enabled) {
-    lines.push('    CLK_EnableModuleClock(ADC_MODULE);');
-    lines.push('    CLK_SetModuleClock(ADC_MODULE, CLK_CLKSEL1_ADCSEL_HIRC, CLK_CLKDIV0_ADC(1));');
-  }
-  return lines.join('\n') || '    /* No module clock selected */';
 }
 
 export function generateCode(state, pinDb) {
