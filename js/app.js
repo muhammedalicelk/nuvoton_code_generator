@@ -1,7 +1,7 @@
-import { cloneDefaultState } from './state.js?v=8';
-import { validateConfig } from './rules.js?v=8';
-import { generateCode } from './generator.js?v=8';
-import { setOptions, showMessages, downloadFile } from './ui.js?v=7';
+import { cloneDefaultState } from './state.js?v=9';
+import { validateConfig } from './rules.js?v=9';
+import { generateCode } from './generator.js?v=9';
+import { setOptions, showMessages, downloadFile } from './ui.js?v=9';
 
 const state = cloneDefaultState();
 let mcuDb;
@@ -128,11 +128,19 @@ function syncStateFromForm() {
 function render() {
   syncFormFromState();
   const result = validateConfig(state, pinDb, mcuDb);
-  generatedCode = generateCode(state, pinDb);
-  els.codePreview.textContent = generatedCode;
-  showMessages(els.messages, result.errors, result.warnings, result.messages);
-  els.statusBadge.textContent = result.valid ? 'Geçerli' : 'Hata Var';
-  els.statusBadge.className = `badge ${result.valid ? 'ok' : 'bad'}`;
+  showMessages(els.messages, result);
+
+  if (result.valid) {
+    generatedCode = generateCode(state, pinDb);
+    els.codePreview.textContent = generatedCode;
+    els.statusBadge.textContent = 'Geçerli';
+    els.statusBadge.className = 'badge ok';
+  } else {
+    generatedCode = '';
+    els.codePreview.textContent = 'Hatalar düzeltilmeden kod üretilemez.';
+    els.statusBadge.textContent = 'Hata var';
+    els.statusBadge.className = 'badge bad';
+  }
 }
 
 function bindEvents() {
@@ -158,6 +166,10 @@ function bindEvents() {
       syncStateFromForm();
       render();
     });
+    element.addEventListener('input', () => {
+      syncStateFromForm();
+      render();
+    });
   });
 
   els.generateBtn.addEventListener('click', () => {
@@ -165,8 +177,13 @@ function bindEvents() {
     render();
   });
 
-  els.downloadCodeBtn.addEventListener('click', () => downloadFile('main.c', generatedCode, 'text/plain'));
+  els.downloadCodeBtn.addEventListener('click', () => {
+    if (!generatedCode) return;
+    downloadFile('main.c', generatedCode, 'text/plain');
+  });
+
   els.copyCodeBtn.addEventListener('click', async () => {
+    if (!generatedCode) return;
     await navigator.clipboard.writeText(generatedCode);
     els.statusBadge.textContent = 'Kopyalandı';
   });
@@ -179,12 +196,15 @@ function bindEvents() {
   els.importConfigInput.addEventListener('change', async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    const data = JSON.parse(await file.text());
-    Object.assign(state, data);
+    const text = await file.text();
+    const imported = JSON.parse(text);
+    Object.keys(state).forEach((key) => delete state[key]);
+    Object.assign(state, cloneDefaultState(), imported);
     render();
   });
 
   els.resetBtn.addEventListener('click', () => {
+    Object.keys(state).forEach((key) => delete state[key]);
     Object.assign(state, cloneDefaultState());
     render();
   });
