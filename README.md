@@ -27,13 +27,6 @@ Sonra tarayıcıda:
 http://localhost:8000
 ```
 
-## GitHub Pages yayın
-1. Bu klasörü bir GitHub repo'ya yükle.
-2. Repo Settings > Pages kısmına gir.
-3. Branch olarak `main`, folder olarak `/root` seç.
-4. Kaydet.
-5. Birkaç dakika sonra link oluşur.
-
 ## Not
 Üretilen bazı pin macro satırlarında yorum olarak `Replace with exact BSP macro if needed` eklendi.
 Bunun sebebi farklı BSP sürümlerinde helper macro isimlerinin değişebilmesidir.
