@@ -1,40 +1,13 @@
 # M031 Kod Üretici
 
-Bu proje, AI kullanmadan hazır template'leri birleştirerek Nuvoton M031FB için başlangıç kodu üretir.
+Statik HTML/CSS/JS tabanlı, template kullanan M031 kod üretici aracı.
 
-## Mevcut özellikler
-- MCU seçimi (şimdilik M031FB)
-- Clock seçimi
-- UART0 ayarı + pin kombinasyonu
-- TIMER0 ayarı
-- ADC ayarı
-- Pin çakışması kontrolü
-- main.c üretimi
-- config export/import
+## Bu sürümde
+- UART0 pin kombinasyonları gerçek RX/TX seti olarak seçilir.
+- ADC çoklu kanal seçimi desteklenir.
+- ADC kodu UART kullanmadan global değişkenlere veri yazar.
+- ADC için `ADC0_Init`, `ADC0_Read` ve `ADC_IRQHandler` üretilir.
+- ADC pinleri için MFP, `GPIO_SetMode` ve `GPIO_DISABLE_DIGITAL_PATH` satırları otomatik oluşur.
 
-## Yerelde çalıştırma
-Statik dosya olduğu için doğrudan açılabilir; ancak fetch kullandığı için yerel testte küçük bir HTTP sunucusu daha sağlıklıdır.
-
-Örnek Python ile:
-
-```bash
-python -m http.server 8000
-```
-
-Sonra tarayıcıda:
-
-```text
-http://localhost:8000
-```
-
-## GitHub Pages yayın
-1. Bu klasörü bir GitHub repo'ya yükle.
-2. Repo Settings > Pages kısmına gir.
-3. Branch olarak `main`, folder olarak `/root` seç.
-4. Kaydet.
-5. Birkaç dakika sonra link oluşur.
-
-## Not
-Üretilen bazı pin macro satırlarında yorum olarak `Replace with exact BSP macro if needed` eklendi.
-Bunun sebebi farklı BSP sürümlerinde helper macro isimlerinin değişebilmesidir.
-Ham MFP macro isimleri de yorum satırında bırakıldı.
+## Yayın
+GitHub Pages ile doğrudan yayınlanabilir.

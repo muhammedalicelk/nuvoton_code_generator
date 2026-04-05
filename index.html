@@ -46,6 +46,7 @@
           <label for="hclkSelect">HCLK</label>
           <select id="hclkSelect"></select>
         </div>
+        <p class="helper-text">ADC sonuçları global değişkenlere yazılır. UART kullanılmaz.</p>
       </div>
 
       <div class="section-block">
@@ -97,15 +98,16 @@
           <div class="field-group">
             <label for="adcModeSelect">Mode</label>
             <select id="adcModeSelect">
-              <option value="single">Single End</option>
+              <option value="single">Single</option>
               <option value="single_cycle_scan">Single Cycle Scan</option>
             </select>
           </div>
           <div class="field-group">
-            <label for="adcChannelSelect">Channel</label>
-            <select id="adcChannelSelect"></select>
+            <label for="adcChannelSelect">Channels</label>
+            <select id="adcChannelSelect" multiple size="6"></select>
           </div>
         </div>
+        <p class="helper-text">ADC sonuçları global değişkenlere yazılır. UART kullanılmaz.</p>
       </div>
 
       <div class="section-block">

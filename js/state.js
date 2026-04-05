@@ -3,7 +3,7 @@ export const defaultState = {
   clock: {
     source: 'HIRC',
     pllEnabled: false,
-    hclk: 72000000
+    hclk: 12000000
   },
   peripherals: {
     uart0: {
@@ -19,8 +19,8 @@ export const defaultState = {
     },
     adc: {
       enabled: false,
-      mode: 'single',
-      channelIndex: 0
+      mode: 'single_cycle_scan',
+      channelIndexes: [2]
     }
   }
 };

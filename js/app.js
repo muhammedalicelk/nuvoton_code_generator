@@ -69,7 +69,10 @@ function syncFormFromState() {
   els.timerFreqInput.value = state.peripherals.timer0.frequency;
   els.timerInterruptEnable.checked = state.peripherals.timer0.interruptEnabled;
   els.adcModeSelect.value = state.peripherals.adc.mode;
-  els.adcChannelSelect.value = String(state.peripherals.adc.channelIndex);
+
+  Array.from(els.adcChannelSelect.options).forEach((option, index) => {
+    option.selected = state.peripherals.adc.channelIndexes.includes(index);
+  });
 
   els.uartSection.classList.toggle('hidden', !state.peripherals.uart0.enabled);
   els.timerSection.classList.toggle('hidden', !state.peripherals.timer0.enabled);
@@ -90,7 +93,7 @@ function syncStateFromForm() {
   state.peripherals.timer0.frequency = Number(els.timerFreqInput.value);
   state.peripherals.timer0.interruptEnabled = els.timerInterruptEnable.checked;
   state.peripherals.adc.mode = els.adcModeSelect.value;
-  state.peripherals.adc.channelIndex = Number(els.adcChannelSelect.value);
+  state.peripherals.adc.channelIndexes = Array.from(els.adcChannelSelect.selectedOptions).map((option) => Number(option.value));
 }
 
 function render() {
@@ -152,7 +155,8 @@ function bindEvents() {
     if (!file) return;
     const text = await file.text();
     const imported = JSON.parse(text);
-    Object.assign(state, imported);
+    Object.keys(state).forEach((key) => delete state[key]);
+    Object.assign(state, cloneDefaultState(), imported);
     render();
   });
 

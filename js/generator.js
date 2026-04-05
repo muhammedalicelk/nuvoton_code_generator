@@ -21,6 +21,12 @@ function buildClockCode(state) {
     lines.push('    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_HXT, CLK_CLKDIV0_HCLK(1));');
   }
 
+  if (state.peripherals.adc.enabled) {
+    lines.push('    /* Conservative APB divider for ADC */');
+    lines.push('    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV8 | CLK_PCLKDIV_APB1DIV_DIV8);');
+  }
+
+  lines.push('    SystemCoreClockUpdate();');
   return lines.join('\n');
 }
 
@@ -36,9 +42,16 @@ function buildModuleClockCode(state) {
   }
   if (state.peripherals.adc.enabled) {
     lines.push('    CLK_EnableModuleClock(ADC_MODULE);');
-    lines.push('    CLK_SetModuleClock(ADC_MODULE, CLK_CLKSEL1_ADCSEL_HIRC, CLK_CLKDIV0_ADC(1));');
+    lines.push('    CLK_SetModuleClock(ADC_MODULE, CLK_CLKSEL2_ADCSEL_PCLK1, CLK_CLKDIV0_ADC(255));');
   }
   return lines.join('\n') || '    /* No module clock selected */';
+}
+
+function getSelectedAdcChannels(state, pinDb) {
+  return state.peripherals.adc.channelIndexes
+    .map((index) => pinDb.adcChannels[index])
+    .filter(Boolean)
+    .sort((a, b) => a.channel - b.channel);
 }
 
 function addPinAssignment(groups, registerName, mask, value) {
@@ -58,31 +71,48 @@ function buildMfpGroups(state, pinDb) {
   }
 
   if (state.peripherals.adc.enabled) {
-    const adcSel = pinDb.adcChannels[state.peripherals.adc.channelIndex];
-    addPinAssignment(groups, adcSel.register, adcSel.mask, adcSel.value);
+    getSelectedAdcChannels(state, pinDb).forEach((adcSel) => {
+      addPinAssignment(groups, adcSel.register, adcSel.mask, adcSel.value);
+    });
   }
 
   return groups;
 }
 
+function buildAdcPortMasks(state, pinDb) {
+  const portMasks = new Map();
+  getSelectedAdcChannels(state, pinDb).forEach((adcSel) => {
+    const [port, bit] = adcSel.pin.split('.');
+    if (!portMasks.has(port)) portMasks.set(port, []);
+    portMasks.get(port).push(`BIT${bit}`);
+  });
+  return portMasks;
+}
+
 function buildMfpCode(state, pinDb) {
   const groups = buildMfpGroups(state, pinDb);
+  const lines = [];
+
   if (groups.size === 0) {
-    return '    /* No peripheral pin configuration selected */';
+    lines.push('    /* No peripheral pin configuration selected */');
+    return lines.join('\n');
   }
 
-  const lines = [];
   for (const [registerName, group] of groups.entries()) {
     lines.push(`    SYS->${registerName} = (SYS->${registerName} & ~(${group.masks.join(' | ')})) |`);
     lines.push(`                      (${group.values.join(' | ')});`);
   }
 
   if (state.peripherals.adc.enabled) {
-    const adcSel = pinDb.adcChannels[state.peripherals.adc.channelIndex];
-    const [port, bit] = adcSel.pin.split('.');
+    const portMasks = buildAdcPortMasks(state, pinDb);
     lines.push('');
-    lines.push('    /* Disable digital path for ADC pin */');
-    lines.push(`    GPIO_DISABLE_DIGITAL_PATH(${port}, BIT${bit});`);
+    lines.push('    /* ADC pins */');
+    for (const [port, masks] of portMasks.entries()) {
+      lines.push(`    GPIO_SetMode(${port}, ${masks.join(' | ')}, GPIO_MODE_INPUT);`);
+    }
+    for (const [port, masks] of portMasks.entries()) {
+      lines.push(`    GPIO_DISABLE_DIGITAL_PATH(${port}, ${masks.join(' | ')});`);
+    }
   }
 
   return lines.join('\n');
@@ -100,8 +130,46 @@ function buildFunctionPrototypes(state) {
   const lines = ['void SYS_Init(void);'];
   if (state.peripherals.uart0.enabled) lines.push('void UART0_Init(void);');
   if (state.peripherals.timer0.enabled) lines.push('void TIMER0_Init(void);');
-  if (state.peripherals.adc.enabled) lines.push('void ADC0_Init(void);');
+  if (state.peripherals.adc.enabled) {
+    lines.push('void ADC0_Init(void);');
+    lines.push('void ADC0_Read(void);');
+    lines.push('void ADC_IRQHandler(void);');
+  }
   return lines.join('\n');
+}
+
+function buildAdcGlobals(state, pinDb) {
+  if (!state.peripherals.adc.enabled) return '';
+  const lines = ['volatile uint32_t g_u32AdcIntFlag = 0;'];
+  getSelectedAdcChannels(state, pinDb).forEach((adcSel) => {
+    lines.push(`uint16_t g_u16AdcCH${adcSel.channel} = 0;`);
+  });
+  return lines.join('\n');
+}
+
+function buildAdcModeMacro(state, pinDb) {
+  const selected = getSelectedAdcChannels(state, pinDb);
+  if (selected.length > 1) return 'ADC_ADCR_ADMD_SINGLE_CYCLE';
+  if (state.peripherals.adc.mode === 'single') return 'ADC_ADCR_ADMD_SINGLE';
+  return 'ADC_ADCR_ADMD_SINGLE_CYCLE';
+}
+
+function buildAdcChannelMask(state, pinDb) {
+  const selected = getSelectedAdcChannels(state, pinDb);
+  return selected.map((adcSel) => `BIT${adcSel.channel}`).join(' | ');
+}
+
+function buildAdcReadAssignments(state, pinDb) {
+  return getSelectedAdcChannels(state, pinDb)
+    .map((adcSel) => `    g_u16AdcCH${adcSel.channel} = ADC_GET_CONVERSION_DATA(ADC, ${adcSel.channel});`)
+    .join('\n');
+}
+
+function buildMainLoop(state) {
+  if (state.peripherals.adc.enabled) {
+    return '    while (1)\n    {\n        ADC0_Read();\n    }';
+  }
+  return '    while (1)\n    {\n    }';
 }
 
 function buildFunctionBodies(state, pinDb) {
@@ -110,7 +178,7 @@ function buildFunctionBodies(state, pinDb) {
   sections.push(`void SYS_Init(void)\n{\n    SYS_UnlockReg();\n\n${buildClockCode(state)}\n\n    /* Enable peripheral module clocks */\n${buildModuleClockCode(state)}\n\n    /* Multi-function I/O */\n${buildMfpCode(state, pinDb)}\n\n    SYS_LockReg();\n}`);
 
   if (state.peripherals.uart0.enabled) {
-    sections.push(`void UART0_Init(void)\n{\n    UART_Open(UART0, ${state.peripherals.uart0.baudrate});\n}`);
+    sections.push(`void UART0_Init(void)\n{\n    SYS_ResetModule(UART0_RST);\n    UART_Open(UART0, ${state.peripherals.uart0.baudrate});\n}`);
   }
 
   if (state.peripherals.timer0.enabled) {
@@ -121,14 +189,18 @@ function buildFunctionBodies(state, pinDb) {
   }
 
   if (state.peripherals.adc.enabled) {
-    const adcSel = pinDb.adcChannels[state.peripherals.adc.channelIndex];
-    const inputMode = state.peripherals.adc.mode === 'single_cycle_scan' ? 'ADC_ADCR_ADMD_SINGLE_CYCLE' : 'ADC_ADCR_ADMD_SINGLE';
-    sections.push(`void ADC0_Init(void)\n{\n    ADC_Open(ADC, ${inputMode}, ADC_OPERATION_MODE_SINGLE, BIT${adcSel.channel});\n}`);
+    const adcMask = buildAdcChannelMask(state, pinDb);
+    const adcMode = buildAdcModeMacro(state, pinDb);
+    sections.push(`void ADC0_Init(void)\n{\n    SYS_ResetModule(ADC_RST);\n    ADC_POWER_ON(ADC);\n    ADC_Open(ADC, ADC_ADCR_DIFFEN_SINGLE_END, ${adcMode}, ${adcMask});\n    ADC_CLR_INT_FLAG(ADC, ADC_ADF_INT);\n    ADC_ENABLE_INT(ADC, ADC_ADF_INT);\n    NVIC_EnableIRQ(ADC_IRQn);\n}`);
+    sections.push(`void ADC0_Read(void)\n{\n    g_u32AdcIntFlag = 0;\n    ADC_CLR_INT_FLAG(ADC, ADC_ADF_INT);\n    ADC_START_CONV(ADC);\n\n    while (g_u32AdcIntFlag == 0);\n\n${buildAdcReadAssignments(state, pinDb)}\n}`);
+    sections.push(`void ADC_IRQHandler(void)\n{\n    g_u32AdcIntFlag = 1;\n    ADC_CLR_INT_FLAG(ADC, ADC_ADF_INT);\n}`);
   }
 
   return sections.join('\n\n');
 }
 
 export function generateCode(state, pinDb) {
-  return `#include <stdio.h>\n#include "NuMicro.h"\n\n${buildFunctionPrototypes(state)}\n\n${buildFunctionBodies(state, pinDb)}\n\nint main(void)\n{\n    SYS_Init();\n${buildInitCalls(state)}\n\n    printf("System ready.\\n");\n\n    while (1)\n    {\n    }\n}\n`;
+  const globals = buildAdcGlobals(state, pinDb);
+  const globalsBlock = globals ? `${globals}\n\n` : '';
+  return `#include <stdio.h>\n#include "NuMicro.h"\n\n${globalsBlock}${buildFunctionPrototypes(state)}\n\n${buildFunctionBodies(state, pinDb)}\n\nint main(void)\n{\n    SYS_Init();\n${buildInitCalls(state)}\n\n${buildMainLoop(state)}\n}\n`;
 }

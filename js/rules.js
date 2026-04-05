@@ -1,3 +1,10 @@
+function getSelectedAdcChannels(state, pinDb) {
+  return state.peripherals.adc.channelIndexes
+    .map((index) => pinDb.adcChannels[index])
+    .filter(Boolean)
+    .sort((a, b) => a.channel - b.channel);
+}
+
 export function validateConfig(state, pinDb, mcuDb) {
   const messages = [];
   const errors = [];
@@ -14,7 +21,7 @@ export function validateConfig(state, pinDb, mcuDb) {
   }
 
   if (!state.clock.pllEnabled && state.clock.hclk > 12000000) {
-    warnings.push('PLL kapalıyken seçilen HCLK gerçek donanımda her zaman doğrudan sağlanamayabilir. Clock doğrulaması sonraki sürümde sıkılaştırılacak.');
+    warnings.push('PLL kapalıyken 12 MHz üzeri HCLK seçimi doğrudan karşılanmayabilir.');
   }
 
   if (state.peripherals.timer0.enabled && Number(state.peripherals.timer0.frequency) <= 0) {
@@ -37,13 +44,21 @@ export function validateConfig(state, pinDb, mcuDb) {
   }
 
   if (state.peripherals.adc.enabled) {
-    const adcSel = pinDb.adcChannels[state.peripherals.adc.channelIndex];
-    if (!adcSel) {
-      errors.push('ADC kanal seçimi geçersiz.');
-    } else if (usedPins.has(adcSel.pin)) {
-      errors.push(`Pin çakışması var: ${adcSel.pin} hem ${usedPins.get(adcSel.pin)} hem ADC için seçilmiş.`);
-    } else {
-      usedPins.set(adcSel.pin, `ADC_CH${adcSel.channel}`);
+    const adcSelected = getSelectedAdcChannels(state, pinDb);
+    if (adcSelected.length === 0) {
+      errors.push('ADC için en az bir kanal seçmelisin.');
+    }
+
+    adcSelected.forEach((adcSel) => {
+      if (usedPins.has(adcSel.pin)) {
+        errors.push(`Pin çakışması var: ${adcSel.pin} hem ${usedPins.get(adcSel.pin)} hem ADC için seçilmiş.`);
+      } else {
+        usedPins.set(adcSel.pin, `ADC_CH${adcSel.channel}`);
+      }
+    });
+
+    if (adcSelected.length > 1 && state.peripherals.adc.mode === 'single') {
+      warnings.push('Birden fazla ADC kanalı seçildiği için kod üretiminde Single Cycle Scan kullanılacak.');
     }
   }
 
@@ -57,8 +72,9 @@ export function validateConfig(state, pinDb, mcuDb) {
   }
 
   if (state.peripherals.adc.enabled) {
-    const adcSel = pinDb.adcChannels[state.peripherals.adc.channelIndex];
-    messages.push(`ADC pini: ${adcSel.label}`);
+    const adcSelected = getSelectedAdcChannels(state, pinDb);
+    messages.push(`ADC kanalları: ${adcSelected.map((item) => `CH${item.channel} (${item.pin})`).join(', ')}`);
+    messages.push('ADC sonuçları global değişkenlere yazılacak.');
   }
 
   messages.push(`MCU: ${state.mcu}`);
