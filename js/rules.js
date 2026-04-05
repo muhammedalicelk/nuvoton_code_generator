@@ -16,15 +16,21 @@ export function validateConfig(state, pinDb, mcuDb) {
     return { valid: false, errors, warnings, messages };
   }
 
+  const allowedSources = mcu.clockSources || [];
+  if (!allowedSources.includes(state.clock.source)) {
+    errors.push(`Seçilen MCU için ${state.clock.source} clock kaynağı desteklenmiyor.`);
+  }
+
+  const allowedHclk = ((mcu.hclkOptionsBySource || {})[state.clock.source] || [mcu.maxHclk]);
+  if (!allowedHclk.includes(state.clock.hclk)) {
+    errors.push(`Seçilen MCU için ${state.clock.source} kaynağında HCLK ${state.clock.hclk} Hz desteklenmiyor.`);
+  }
+
   if (state.clock.hclk > mcu.maxHclk) {
     errors.push(`HCLK değeri MCU sınırını aşıyor. Maksimum: ${mcu.maxHclk} Hz`);
   }
 
-  if (!state.clock.pllEnabled && state.clock.hclk > 12000000) {
-    warnings.push('PLL kapalıyken 12 MHz üzeri HCLK seçimi doğrudan karşılanmayabilir.');
-  }
-
-  warnings.push('Bu sürümde pin listesi package bazlı filtrelenmiyor. Küçük paket seçtiysen fiziksel pinleri ayrıca kontrol et.');
+  warnings.push('Pin listesi henüz package bazlı filtrelenmiyor. Fiziksel pinleri ayrıca kontrol et.');
 
   if (state.peripherals.timer0.enabled && Number(state.peripherals.timer0.frequency) <= 0) {
     errors.push('Timer frekansı 0 veya negatif olamaz.');
@@ -91,8 +97,13 @@ export function validateConfig(state, pinDb, mcuDb) {
     }
   }
 
+  const available = Object.entries(mcu.clockCapabilities?.oscillators || {})
+    .filter(([, enabled]) => enabled)
+    .map(([name]) => name)
+    .join(', ');
   messages.push(`MCU: ${mcu.name} / Paket: ${mcu.package}`);
   messages.push(`Clock profili: ${mcu.clockProfile}`);
+  messages.push(`Mevcut kaynaklar: ${available}`);
   messages.push(`Clock: ${state.clock.source} / PLL ${state.clock.pllEnabled ? 'Açık' : 'Kapalı'} / HCLK ${state.clock.hclk} Hz`);
 
   return { valid: errors.length === 0, errors, warnings, messages };

@@ -8,7 +8,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -20,7 +23,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031FC1AE",
@@ -30,7 +79,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -42,7 +94,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031EB0AE",
@@ -52,7 +150,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -64,7 +165,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031EC1AE",
@@ -74,7 +221,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -86,7 +236,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031TB0AE",
@@ -96,7 +292,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -108,7 +307,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031TC1AE",
@@ -118,7 +363,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -130,7 +378,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031TD2AE",
@@ -140,7 +434,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -152,7 +449,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031TE3AE",
@@ -162,7 +505,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -174,7 +520,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031LC2AE",
@@ -184,7 +576,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -196,7 +591,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031LD2AE",
@@ -206,7 +647,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -218,7 +662,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031LE3AE",
@@ -228,7 +718,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -240,7 +733,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031SC2AE",
@@ -250,7 +789,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -262,7 +804,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031SD2AE",
@@ -272,7 +860,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -284,7 +875,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031SE3AE",
@@ -294,7 +931,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -306,17 +946,66 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031LG6AE",
       "displayName": "M031LG6AE (LQFP48)",
       "package": "LQFP48",
       "family": "M031",
-      "maxHclk": 72000000,
+      "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -329,17 +1018,66 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031SG6AE",
       "displayName": "M031SG6AE (LQFP64)",
       "package": "LQFP64",
       "family": "M031",
-      "maxHclk": 72000000,
+      "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -352,17 +1090,66 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031KG6AE",
       "displayName": "M031KG6AE (LQFP128)",
       "package": "LQFP128",
       "family": "M031",
-      "maxHclk": 72000000,
+      "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -375,17 +1162,66 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031LG8AE",
       "displayName": "M031LG8AE (LQFP48)",
       "package": "LQFP48",
       "family": "M031",
-      "maxHclk": 72000000,
+      "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -398,17 +1234,66 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031SG8AE",
       "displayName": "M031SG8AE (LQFP64)",
       "package": "LQFP64",
       "family": "M031",
-      "maxHclk": 72000000,
+      "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -421,17 +1306,66 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031KG8AE",
       "displayName": "M031KG8AE (LQFP128)",
       "package": "LQFP128",
       "family": "M031",
-      "maxHclk": 72000000,
+      "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -444,17 +1378,66 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031SIAAE",
       "displayName": "M031SIAAE (LQFP64)",
       "package": "LQFP64",
       "family": "M031",
-      "maxHclk": 72000000,
+      "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -467,17 +1450,66 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031KIAAE",
       "displayName": "M031KIAAE (LQFP128)",
       "package": "LQFP128",
       "family": "M031",
-      "maxHclk": 72000000,
+      "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -490,7 +1522,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031/M032)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031BTYD2AN",
@@ -500,7 +1578,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -512,7 +1593,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031BT)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     },
     {
       "name": "M031BTYE3AN",
@@ -522,7 +1649,10 @@
       "maxHclk": 48000000,
       "clockSources": [
         "HIRC",
-        "HXT"
+        "HXT",
+        "LIRC",
+        "LXT",
+        "PLL"
       ],
       "hclkOptions": [
         12000000,
@@ -534,7 +1664,53 @@
         "TIMER0",
         "ADC"
       ],
-      "clockProfile": "NuTool-ClockConfigure import"
+      "clockProfile": "NuTool-ClockConfigure import (M031BT)",
+      "hclkOptionsBySource": {
+        "HIRC": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ],
+        "HXT": [
+          32000000,
+          16000000,
+          8000000,
+          4000000
+        ],
+        "LIRC": [
+          38400
+        ],
+        "LXT": [
+          32768
+        ],
+        "PLL": [
+          48000000,
+          24000000,
+          12000000,
+          6000000
+        ]
+      },
+      "clockCapabilities": {
+        "oscillators": {
+          "HIRC": true,
+          "HXT": true,
+          "LIRC": true,
+          "LXT": true,
+          "PLL": true,
+          "MIRC": false
+        },
+        "hxtRange": "4~32MHz",
+        "hxtNominal": 32000000,
+        "hircNominal": 48000000,
+        "lircNominal": 38400,
+        "lxtNominal": 32768,
+        "pllNominal": 48000000,
+        "pllSourceOptions": [
+          "HXT",
+          "HIRC_DIV4"
+        ]
+      }
     }
   ]
 }

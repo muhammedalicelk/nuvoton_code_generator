@@ -9,27 +9,75 @@ function getSelectedStPin(state, pinDb) {
   return pinDb.adcStOptions[state.peripherals.adc.stPinIndex] || null;
 }
 
-function buildClockCode(state) {
-  const lines = [];
-  lines.push('    /* Enable internal RC 12 MHz clock */');
-  lines.push('    CLK_EnableXtalRC(CLK_PWRCTL_HIRCEN_Msk);');
-  lines.push('    CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);');
+function getCurrentMcu(state, mcuDb) {
+  return mcuDb?.mcus?.find((item) => item.name === state.mcu) || null;
+}
 
-  if (state.clock.source === 'HXT') {
-    lines.push('    /* Enable external crystal clock */');
+function getClockNominal(mcu, source) {
+  const caps = mcu?.clockCapabilities || {};
+  const map = {
+    HIRC: caps.hircNominal || 48000000,
+    HXT: caps.hxtNominal || 32000000,
+    LIRC: caps.lircNominal || 38400,
+    LXT: caps.lxtNominal || 32768,
+    PLL: caps.pllNominal || mcu?.maxHclk || 48000000
+  };
+  return map[source] || (mcu?.maxHclk || 48000000);
+}
+
+function getHclkDivider(nominal, target) {
+  if (!nominal || !target) return 1;
+  const div = nominal / target;
+  if (Number.isInteger(div) && div >= 1 && div <= 16) return div;
+  return 1;
+}
+
+function buildClockCode(state, mcuDb) {
+  const mcu = getCurrentMcu(state, mcuDb);
+  const source = state.clock.source;
+  const lines = [];
+
+  if (source === 'HIRC' || source === 'PLL') {
+    lines.push('    /* Enable internal high-speed RC clock */');
+    lines.push('    CLK_EnableXtalRC(CLK_PWRCTL_HIRCEN_Msk);');
+    lines.push('    CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);');
+  }
+
+  if (source === 'HXT' || source === 'PLL') {
+    lines.push('    /* Enable external high-speed crystal */');
     lines.push('    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);');
     lines.push('    CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);');
   }
 
-  if (state.clock.pllEnabled) {
+  if (source === 'LIRC') {
+    lines.push('    /* Enable internal low-speed RC clock */');
+    lines.push('    CLK_EnableXtalRC(CLK_PWRCTL_LIRCEN_Msk);');
+    lines.push('    CLK_WaitClockReady(CLK_STATUS_LIRCSTB_Msk);');
+  }
+
+  if (source === 'LXT') {
+    lines.push('    /* Enable external low-speed crystal */');
+    lines.push('    CLK_EnableXtalRC(CLK_PWRCTL_LXTEN_Msk);');
+    lines.push('    CLK_WaitClockReady(CLK_STATUS_LXTSTB_Msk);');
+  }
+
+  if (source === 'PLL') {
+    const pllNominal = getClockNominal(mcu, 'PLL');
+    const div = getHclkDivider(pllNominal, state.clock.hclk);
     lines.push('    /* Configure PLL and switch HCLK to PLL */');
-    lines.push(`    CLK_SetCoreClock(${state.clock.hclk});`);
-  } else if (state.clock.source === 'HIRC') {
-    lines.push('    /* Switch HCLK source to HIRC */');
-    lines.push('    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_HIRC, CLK_CLKDIV0_HCLK(1));');
+    lines.push(`    CLK_EnablePLL(CLK_PLLCTL_PLLSRC_HXT, ${pllNominal});`);
+    lines.push(`    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_PLL, CLK_CLKDIV0_HCLK(${div}));`);
   } else {
-    lines.push('    /* Switch HCLK source to HXT */');
-    lines.push('    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_HXT, CLK_CLKDIV0_HCLK(1));');
+    const nominal = getClockNominal(mcu, source);
+    const div = getHclkDivider(nominal, state.clock.hclk);
+    const sourceMap = {
+      HIRC: 'CLK_CLKSEL0_HCLKSEL_HIRC',
+      HXT: 'CLK_CLKSEL0_HCLKSEL_HXT',
+      LIRC: 'CLK_CLKSEL0_HCLKSEL_LIRC',
+      LXT: 'CLK_CLKSEL0_HCLKSEL_LXT'
+    };
+    lines.push(`    /* Switch HCLK source to ${source} */`);
+    lines.push(`    CLK_SetHCLK(${sourceMap[source]}, CLK_CLKDIV0_HCLK(${div}));`);
   }
 
   if (state.peripherals.adc.enabled) {
@@ -187,10 +235,10 @@ function buildMainLoop(state) {
   return '    while (1)\n    {\n    }';
 }
 
-function buildFunctionBodies(state, pinDb) {
+function buildFunctionBodies(state, pinDb, mcuDb) {
   const sections = [];
 
-  sections.push(`void SYS_Init(void)\n{\n    SYS_UnlockReg();\n\n${buildClockCode(state)}\n\n    /* Enable peripheral module clocks */\n${buildModuleClockCode(state)}\n\n    /* Multi-function I/O */\n${buildMfpCode(state, pinDb)}\n\n    SYS_LockReg();\n}`);
+  sections.push(`void SYS_Init(void)\n{\n    SYS_UnlockReg();\n\n${buildClockCode(state, mcuDb)}\n\n    /* Enable peripheral module clocks */\n${buildModuleClockCode(state)}\n\n    /* Multi-function I/O */\n${buildMfpCode(state, pinDb)}\n\n    SYS_LockReg();\n}`);
 
   if (state.peripherals.uart0.enabled) {
     sections.push(`void UART0_Init(void)\n{\n    SYS_ResetModule(UART0_RST);\n    UART_Open(UART0, ${state.peripherals.uart0.baudrate});\n}`);
@@ -226,5 +274,6 @@ export function generateCode(state, pinDb, mcuDb) {
   const mcu = mcuDb?.mcus?.find((item) => item.name === state.mcu);
   const globals = buildAdcGlobals(state, pinDb);
   const globalsBlock = globals ? `${globals}\n\n` : '';
-  return `#include <stdio.h>\n#include "NuMicro.h"\n\n${globalsBlock}${buildFunctionPrototypes(state)}\n\n${buildFunctionBodies(state, pinDb)}\n\nint main(void)\n{\n    SYS_Init();\n${buildInitCalls(state)}\n\n${buildMainLoop(state)}\n}\n`;
+  const comment = mcu ? `/* ${mcu.name} / ${mcu.package} / Clock source: ${state.clock.source} */\n` : '';
+  return `${comment}#include <stdio.h>\n#include "NuMicro.h"\n\n${globalsBlock}${buildFunctionPrototypes(state)}\n\n${buildFunctionBodies(state, pinDb, mcuDb)}\n\nint main(void)\n{\n    SYS_Init();\n${buildInitCalls(state)}\n\n${buildMainLoop(state)}\n}\n`;
 }
