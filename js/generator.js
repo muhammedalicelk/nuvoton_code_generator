@@ -22,8 +22,8 @@ function buildClockCode(state) {
   }
 
   if (state.peripherals.adc.enabled) {
-    lines.push('    /* Conservative APB divider for ADC */');
-    lines.push('    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV8 | CLK_PCLKDIV_APB1DIV_DIV8);');
+    lines.push('    /* ADC için APB divider = 1 */');
+    lines.push('    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV1 | CLK_PCLKDIV_APB1DIV_DIV1);');
   }
 
   lines.push('    SystemCoreClockUpdate();');
@@ -42,7 +42,7 @@ function buildModuleClockCode(state) {
   }
   if (state.peripherals.adc.enabled) {
     lines.push('    CLK_EnableModuleClock(ADC_MODULE);');
-    lines.push('    CLK_SetModuleClock(ADC_MODULE, CLK_CLKSEL2_ADCSEL_PCLK1, CLK_CLKDIV0_ADC(255));');
+    lines.push('    CLK_SetModuleClock(ADC_MODULE, CLK_CLKSEL2_ADCSEL_PCLK1, CLK_CLKDIV0_ADC(128));');
   }
   return lines.join('\n') || '    /* No module clock selected */';
 }

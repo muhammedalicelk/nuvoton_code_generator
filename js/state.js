@@ -20,7 +20,7 @@ export const defaultState = {
     adc: {
       enabled: false,
       mode: 'single_cycle_scan',
-      channelIndexes: [2]
+      channelIndexes: [2, 3]
     }
   }
 };

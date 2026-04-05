@@ -1,7 +1,7 @@
-import { cloneDefaultState } from './state.js';
-import { validateConfig } from './rules.js';
-import { generateCode } from './generator.js';
-import { setOptions, showMessages, downloadFile } from './ui.js';
+import { cloneDefaultState } from './state.js?v=4';
+import { validateConfig } from './rules.js?v=4';
+import { generateCode } from './generator.js?v=4';
+import { setOptions, showMessages, downloadFile } from './ui.js?v=4';
 
 const state = cloneDefaultState();
 let mcuDb;
@@ -25,7 +25,7 @@ const els = {
   timerFreqInput: document.getElementById('timerFreqInput'),
   timerInterruptEnable: document.getElementById('timerInterruptEnable'),
   adcModeSelect: document.getElementById('adcModeSelect'),
-  adcChannelSelect: document.getElementById('adcChannelSelect'),
+  adcChannelList: document.getElementById('adcChannelList'),
   generateBtn: document.getElementById('generateBtn'),
   downloadCodeBtn: document.getElementById('downloadCodeBtn'),
   copyCodeBtn: document.getElementById('copyCodeBtn'),
@@ -46,13 +46,33 @@ async function loadData() {
   pinDb = await pinRes.json();
 }
 
+
+function renderAdcChannelList() {
+  els.adcChannelList.innerHTML = '';
+  pinDb.adcChannels.forEach((channel, index) => {
+    const label = document.createElement('label');
+    label.className = 'checkbox-item';
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.value = String(index);
+    input.checked = state.peripherals.adc.channelIndexes.includes(index);
+    input.addEventListener('change', () => {
+      syncStateFromForm();
+      render();
+    });
+    label.appendChild(input);
+    label.append(` ${channel.label}`);
+    els.adcChannelList.appendChild(label);
+  });
+}
+
 function fillStaticOptions() {
   setOptions(els.mcuSelect, mcuDb.mcus.map((item) => ({ value: item.name, label: item.displayName })));
   const mcu = mcuDb.mcus.find((item) => item.name === state.mcu);
   setOptions(els.clockSourceSelect, mcu.clockSources);
   setOptions(els.hclkSelect, mcu.hclkOptions);
   setOptions(els.uartPinSelect, pinDb.uart0Options, 'index', 'label');
-  setOptions(els.adcChannelSelect, pinDb.adcChannels, 'index', 'label');
+  renderAdcChannelList();
 }
 
 function syncFormFromState() {
@@ -70,9 +90,7 @@ function syncFormFromState() {
   els.timerInterruptEnable.checked = state.peripherals.timer0.interruptEnabled;
   els.adcModeSelect.value = state.peripherals.adc.mode;
 
-  Array.from(els.adcChannelSelect.options).forEach((option, index) => {
-    option.selected = state.peripherals.adc.channelIndexes.includes(index);
-  });
+  renderAdcChannelList();
 
   els.uartSection.classList.toggle('hidden', !state.peripherals.uart0.enabled);
   els.timerSection.classList.toggle('hidden', !state.peripherals.timer0.enabled);
@@ -93,7 +111,7 @@ function syncStateFromForm() {
   state.peripherals.timer0.frequency = Number(els.timerFreqInput.value);
   state.peripherals.timer0.interruptEnabled = els.timerInterruptEnable.checked;
   state.peripherals.adc.mode = els.adcModeSelect.value;
-  state.peripherals.adc.channelIndexes = Array.from(els.adcChannelSelect.selectedOptions).map((option) => Number(option.value));
+  state.peripherals.adc.channelIndexes = Array.from(els.adcChannelList.querySelectorAll('input[type="checkbox"]:checked')).map((input) => Number(input.value));
 }
 
 function render() {
@@ -117,7 +135,7 @@ function bindEvents() {
     els.mcuSelect, els.clockSourceSelect, els.pllSelect, els.hclkSelect,
     els.uartEnable, els.timerEnable, els.adcEnable, els.uartBaudInput,
     els.uartPinSelect, els.timerModeSelect, els.timerFreqInput,
-    els.timerInterruptEnable, els.adcModeSelect, els.adcChannelSelect
+    els.timerInterruptEnable, els.adcModeSelect
   ].forEach((el) => {
     el.addEventListener('change', () => {
       syncStateFromForm();

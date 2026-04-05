@@ -46,7 +46,7 @@
           <label for="hclkSelect">HCLK</label>
           <select id="hclkSelect"></select>
         </div>
-        <p class="helper-text">ADC sonuçları global değişkenlere yazılır. UART kullanılmaz.</p>
+        <p class="helper-text">ADC sonuçları global değişkenlere yazılır. Birden fazla kanal seçebilirsin. UART kullanılmaz.</p>
       </div>
 
       <div class="section-block">
@@ -103,8 +103,8 @@
             </select>
           </div>
           <div class="field-group">
-            <label for="adcChannelSelect">Channels</label>
-            <select id="adcChannelSelect" multiple size="6"></select>
+            <label>Channels</label>
+            <div id="adcChannelList" class="checkbox-list"></div>
           </div>
         </div>
         <p class="helper-text">ADC sonuçları global değişkenlere yazılır. UART kullanılmaz.</p>
@@ -130,6 +130,6 @@
     </section>
   </main>
 
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js?v=4"></script>
 </body>
 </html>

@@ -146,3 +146,22 @@ pre {
 select[multiple] {
   min-height: 150px;
 }
+
+
+.checkbox-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px 12px;
+  padding: 10px 12px;
+  border: 1px solid #2b3648;
+  border-radius: 10px;
+  background: #0f1724;
+  min-height: 84px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+}
