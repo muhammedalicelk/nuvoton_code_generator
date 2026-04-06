@@ -54,3 +54,11 @@ pre { background:#020617; border:1px solid var(--border); border-radius:12px; pa
 .top-gap { margin-top:12px; }
 @media (max-width: 1180px) { .layout { grid-template-columns:1fr; } pre { min-height:50vh; } }
 @media (max-width: 680px) { .field-row, .field-row-3, .checkbox-grid { grid-template-columns:1fr; } }
+
+
+.hclk-row { grid-template-columns: minmax(150px, 180px) minmax(120px, 140px) minmax(240px, 1fr); align-items:start; }
+#hclkInfo { white-space: normal; line-height: 1.5; min-height: 72px; display:block; }
+@media (max-width: 900px) {
+  .hclk-row { grid-template-columns:1fr; }
+  #hclkInfo { min-height:auto; }
+}
