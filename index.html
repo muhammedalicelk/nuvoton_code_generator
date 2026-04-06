@@ -48,7 +48,11 @@
           <select id="hclkSelect"></select>
         </div>
       </div>
-      <p class="helper-text">Clock kaynakları artık seçilen MCU profiline göre filtrelenir. Bu sürümde MIRC yalnızca gerçekten varsa gösterilir; M031/M031BT içeriklerinde MIRC tanımı yok.</p>
+      <div class="field-group hidden" id="pllSourceSection">
+        <label for="pllSourceSelect">PLL Kaynağı</label>
+        <select id="pllSourceSelect"></select>
+      </div>
+      <p class="helper-text">Clock kaynakları seçilen MCU profiline göre filtrelenir. PLL seçildiğinde PLL'i besleyen kaynak ayrıca seçilir. Bazı modellerde PLL kaynağı sabittir ve değiştirilemez.</p>
 
       <div class="section-block">
         <h3>3. Çevreseller</h3>
@@ -159,6 +163,6 @@
     </section>
   </main>
 
-  <script type="module" src="js/app.js?v=12"></script>
+  <script type="module" src="js/app.js?v=13"></script>
 </body>
 </html>

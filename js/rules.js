@@ -1,3 +1,11 @@
+
+function getAllowedPllSources(mcu) {
+  if (!mcu) return ['HIRC_DIV4'];
+  if (mcu.name && /^M031(?!BT)/.test(mcu.name)) return ['HIRC_DIV4'];
+  const opts = mcu.clockCapabilities?.pllSourceOptions || ['HIRC_DIV4'];
+  return opts.length ? opts : ['HIRC_DIV4'];
+}
+
 function getSelectedAdcChannels(state, pinDb) {
   return state.peripherals.adc.channelIndexes
     .map((index) => pinDb.adcChannels[index])
@@ -28,6 +36,13 @@ export function validateConfig(state, pinDb, mcuDb) {
 
   if (state.clock.hclk > mcu.maxHclk) {
     errors.push(`HCLK değeri MCU sınırını aşıyor. Maksimum: ${mcu.maxHclk} Hz`);
+  }
+
+  if (state.clock.source === 'PLL') {
+    const pllSources = getAllowedPllSources(mcu);
+    if (!pllSources.includes(state.clock.pllSource)) {
+      errors.push(`Seçilen MCU için PLL kaynağı ${state.clock.pllSource} desteklenmiyor.`);
+    }
   }
 
   warnings.push('Pin listesi henüz package bazlı filtrelenmiyor. Fiziksel pinleri ayrıca kontrol et.');
@@ -104,7 +119,8 @@ export function validateConfig(state, pinDb, mcuDb) {
   messages.push(`MCU: ${mcu.name} / Paket: ${mcu.package}`);
   messages.push(`Clock profili: ${mcu.clockProfile}`);
   messages.push(`Mevcut kaynaklar: ${available}`);
-  messages.push(`Clock: ${state.clock.source} / PLL ${state.clock.pllEnabled ? 'Açık' : 'Kapalı'} / HCLK ${state.clock.hclk} Hz`);
+  const pllMsg = state.clock.source === 'PLL' ? ` / PLL kaynağı ${state.clock.pllSource}` : '';
+  messages.push(`Clock: ${state.clock.source}${pllMsg} / HCLK ${state.clock.hclk} Hz`);
 
   return { valid: errors.length === 0, errors, warnings, messages };
 }

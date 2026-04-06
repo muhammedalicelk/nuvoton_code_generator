@@ -3,6 +3,7 @@ export const defaultState = {
   clock: {
     source: 'HIRC',
     pllEnabled: false,
+    pllSource: 'HIRC_DIV4',
     hclk: 48000000
   },
   peripherals: {

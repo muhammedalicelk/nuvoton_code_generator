@@ -1,7 +1,7 @@
-import { cloneDefaultState } from './state.js?v=12';
-import { validateConfig } from './rules.js?v=12';
-import { generateCode } from './generator.js?v=12';
-import { setOptions, showMessages, downloadFile } from './ui.js?v=12';
+import { cloneDefaultState } from './state.js?v=13';
+import { validateConfig } from './rules.js?v=13';
+import { generateCode } from './generator.js?v=13';
+import { setOptions, showMessages, downloadFile } from './ui.js?v=13';
 
 const state = cloneDefaultState();
 let mcuDb;
@@ -13,6 +13,8 @@ const els = {
   mcuMeta: document.getElementById('mcuMeta'),
   clockSourceSelect: document.getElementById('clockSourceSelect'),
   pllSelect: document.getElementById('pllSelect'),
+  pllSourceSection: document.getElementById('pllSourceSection'),
+  pllSourceSelect: document.getElementById('pllSourceSelect'),
   hclkSelect: document.getElementById('hclkSelect'),
   uartEnable: document.getElementById('uartEnable'),
   timerEnable: document.getElementById('timerEnable'),
@@ -59,6 +61,18 @@ function getAllowedClockSources(mcu) {
   return (mcu.clockSources || []).map((src) => ({ value: src, label: src }));
 }
 
+function getAllowedPllSources(mcu) {
+  if (!mcu) return [{ value: 'HIRC_DIV4', label: 'HIRC/4' }];
+  let options = mcu.clockCapabilities?.pllSourceOptions || ['HIRC_DIV4'];
+  if (mcu.name && /^M031(?!BT)/.test(mcu.name)) {
+    options = ['HIRC_DIV4'];
+  }
+  return options.map((src) => ({
+    value: src,
+    label: src === 'HIRC_DIV4' ? 'HIRC/4' : src
+  }));
+}
+
 function getHclkOptionsForSource(mcu, source) {
   const values = (mcu.hclkOptionsBySource && mcu.hclkOptionsBySource[source]) || [mcu.maxHclk];
   return values.map((value) => ({ value: String(value), label: value.toLocaleString('tr-TR') }));
@@ -71,7 +85,16 @@ function refreshMcuDependentOptions() {
     state.clock.source = allowedSources[0];
   }
 
+  const pllSourceOptions = getAllowedPllSources(mcu);
+  const allowedPllSources = pllSourceOptions.map((item) => item.value);
+  if (!allowedPllSources.includes(state.clock.pllSource)) {
+    state.clock.pllSource = allowedPllSources[0];
+  }
+
   setOptions(els.clockSourceSelect, getAllowedClockSources(mcu));
+  setOptions(els.pllSourceSelect, pllSourceOptions);
+  els.pllSourceSelect.disabled = pllSourceOptions.length <= 1;
+
   const hclkOptions = getHclkOptionsForSource(mcu, state.clock.source);
   const allowedHclk = hclkOptions.map((item) => Number(item.value));
   if (!allowedHclk.includes(state.clock.hclk)) {
@@ -95,7 +118,8 @@ function renderMcuMeta() {
     `<div><strong>Maks. HCLK:</strong> ${mcu.maxHclk.toLocaleString('tr-TR')} Hz</div>`,
     `<div><strong>Clock Kaynakları:</strong> ${available || 'Belirtilmemiş'}</div>`,
     `<div><strong>HXT:</strong> ${caps.hxtRange || '—'}</div>`,
-    `<div><strong>Kaynak:</strong> ${mcu.clockProfile}</div>`
+    `<div><strong>Kaynak:</strong> ${mcu.clockProfile}</div>`,
+    `<div><strong>PLL Kaynağı:</strong> ${getAllowedPllSources(mcu).map((x) => x.label).join(', ')}</div>`
   ].join('');
 }
 
@@ -132,6 +156,7 @@ function syncFormFromState() {
   els.clockSourceSelect.value = state.clock.source;
   els.pllSelect.value = String(state.clock.pllEnabled);
   els.pllSelect.disabled = true;
+  els.pllSourceSelect.value = state.clock.pllSource;
   els.hclkSelect.value = String(state.clock.hclk);
   els.uartEnable.checked = state.peripherals.uart0.enabled;
   els.timerEnable.checked = state.peripherals.timer0.enabled;
@@ -152,6 +177,7 @@ function syncFormFromState() {
   els.timerSection.classList.toggle('hidden', !state.peripherals.timer0.enabled);
   els.adcSection.classList.toggle('hidden', !state.peripherals.adc.enabled);
   els.adcStSection.classList.toggle('hidden', !(state.peripherals.adc.enabled && state.peripherals.adc.trigger === 'stadc'));
+  els.pllSourceSection.classList.toggle('hidden', state.clock.source !== 'PLL');
 }
 
 function syncStateFromForm() {
@@ -169,6 +195,8 @@ function syncStateFromForm() {
     state.clock.source = allowedSources[0];
   }
   state.clock.pllEnabled = state.clock.source === 'PLL';
+  const allowedPllSources = getAllowedPllSources(mcu).map((item) => item.value);
+  state.clock.pllSource = allowedPllSources.includes(els.pllSourceSelect.value) ? els.pllSourceSelect.value : allowedPllSources[0];
 
   const allowedHclk = ((mcu.hclkOptionsBySource || {})[state.clock.source] || [mcu.maxHclk]);
   const requestedHclk = Number(els.hclkSelect.value);
@@ -212,6 +240,7 @@ function bindEvents() {
     els.mcuSelect,
     els.clockSourceSelect,
     els.pllSelect,
+    els.pllSourceSelect,
     els.hclkSelect,
     els.uartEnable,
     els.timerEnable,
