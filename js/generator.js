@@ -64,6 +64,14 @@ function computeExactPllctl(state, mcu) {
   const caps = mcu?.clockCapabilities || {};
   const fin = source === 'HXT' ? Number(caps.hxtNominal || 32000000) : Number(caps.hircNominal || 48000000) / 4;
   const srcBit = source === 'HXT' ? 0 : 1;
+  const presetMap = {
+    HIRC: {
+      48000000: { nr: 3, nf: 48, no: 4, value: 0x0008C22E, real: 48000000 },
+      72000000: { nr: 3, nf: 72, no: 4, value: 0x0008C246, real: 72000000 },
+      96000000: { nr: 2, nf: 64, no: 4, value: 0x0008C03E, real: 96000000 }
+    }
+  };
+  if (presetMap[source] && presetMap[source][target]) return presetMap[source][target];
   const preferredOutDividers = target >= 100000000 ? [2, 4, 1] : [4, 2, 1];
   const candidates = [];
 
@@ -119,7 +127,7 @@ function requiredEnabledSources(state) {
     state.peripherals.adc.clockSource === 'PLL'
   ) {
     if (state.clock.pllSource === 'HXT') set.add('HXT');
-    if (state.clock.pllSource === 'HIRC_DIV4') set.add('HIRC');
+    if (state.clock.pllSource === 'HIRC') set.add('HIRC');
   }
 
   if (state.peripherals.uart0.enabled && ['HIRC', 'HXT', 'LXT', 'LIRC'].includes(state.peripherals.uart0.clockSource)) {
@@ -163,8 +171,9 @@ function buildClockCode(state, mcuDb) {
       lines.push(`    /* PLL source: ${state.clock.pllSource}, target: ${state.clock.pllFreq} Hz, NR=${pll.nr}, NF=${pll.nf}, NO=${pll.no} */`);
       lines.push(`    CLK->PLLCTL = (CLK->PLLCTL & ~(0x000FFFFFUL)) | ${formatHexPllctl(pll.value)};`);
     } else {
-      const pllSrc = state.clock.pllSource === 'HXT' ? 'CLK_PLLCTL_PLLSRC_HXT' : 'CLK_PLLCTL_PLLSRC_HIRC_DIV4';
-      lines.push(`    CLK_EnablePLL(${pllSrc}, ${state.clock.pllFreq});`);
+      const fallbackValue = state.clock.pllSource === 'HXT' ? '0x0005C25EUL' : '0x0008C03EUL';
+      lines.push(`    /* Fallback exact PLLCTL candidate */`);
+      lines.push(`    CLK->PLLCTL = (CLK->PLLCTL & ~(0x000FFFFFUL)) | ${fallbackValue};`);
     }
     lines.push('    CLK_WaitClockReady(CLK_STATUS_PLLSTB_Msk);');
   }

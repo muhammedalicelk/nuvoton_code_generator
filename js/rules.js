@@ -32,7 +32,7 @@ export function validateConfig(state, pinDb, mcuDb) {
   if (state.clock.hclkSource !== 'PLL') needed.push(state.clock.hclkSource);
   if (state.clock.pllEnabled || state.clock.hclkSource === 'PLL' || state.peripherals.uart0.clockSource==='PLL' || state.peripherals.adc.clockSource==='PLL') {
     if (state.clock.pllSource === 'HXT') needed.push('HXT');
-    if (state.clock.pllSource === 'HIRC_DIV4') needed.push('HIRC');
+    if (state.clock.pllSource === 'HIRC') needed.push('HIRC');
   }
   if (state.peripherals.uart0.enabled && ['HIRC','HXT','LXT','LIRC'].includes(state.peripherals.uart0.clockSource)) needed.push(state.peripherals.uart0.clockSource);
   if (state.peripherals.timer0.enabled && ['HIRC','HXT','LXT','LIRC'].includes(state.peripherals.timer0.clockSource)) needed.push(state.peripherals.timer0.clockSource);

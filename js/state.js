@@ -9,7 +9,7 @@ export const defaultState = {
       MIRC: false
     },
     pllEnabled: false,
-    pllSource: 'HIRC_DIV4',
+    pllSource: 'HIRC',
     pllFreq: 48000000,
     hclkSource: 'HIRC',
     hclk: 48000000,

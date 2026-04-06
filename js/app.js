@@ -1,7 +1,7 @@
-import { cloneDefaultState } from './state.js?v=16';
-import { validateConfig } from './rules.js?v=16';
-import { generateCode } from './generator.js?v=16';
-import { setOptions, showMessages, downloadFile } from './ui.js?v=16';
+import { cloneDefaultState } from './state.js?v=17';
+import { validateConfig } from './rules.js?v=17';
+import { generateCode } from './generator.js?v=17';
+import { setOptions, showMessages, downloadFile } from './ui.js?v=17';
 
 const state = cloneDefaultState();
 let mcuDb;
@@ -62,7 +62,7 @@ function supportedBaseSources(mcu) { return ['HIRC','HXT','LIRC','LXT','MIRC'].f
 function supportedHclkSources(mcu) { const list = [...supportedBaseSources(mcu)]; if (getOscCaps(mcu).PLL) list.push('PLL'); return list; }
 function pllSourceOptions(mcu) {
   const opts = mcu?.clockCapabilities?.pllSourceOptions || [];
-  return opts.map((value) => ({ value, label: value === 'HIRC_DIV4' ? 'HIRC/4' : value }));
+  return opts.map((value) => ({ value: value === 'HIRC' ? 'HIRC' : value, label: value === 'HIRC' ? 'HIRC' : value }));
 }
 function clockNominal(mcu, source) {
   const caps = mcu?.clockCapabilities || {};
@@ -153,7 +153,7 @@ function renderEnabledClockSummary() {
   const enabled = Object.entries(state.clock.enabled)
     .filter(([, on]) => on)
     .map(([name]) => name);
-  if (state.clock.pllEnabled) enabled.push(`PLL(${state.clock.pllSource === 'HIRC_DIV4' ? 'HIRC/4' : state.clock.pllSource})`);
+  if (state.clock.pllEnabled) enabled.push(`PLL(${state.clock.pllSource})`);
   els.enabledClockSummary.innerHTML = enabled.length
     ? `<strong>Enable edilen kaynaklar:</strong> ${enabled.join(', ')}`
     : '<strong>Enable edilen kaynaklar:</strong> yok';
@@ -177,7 +177,7 @@ function applyDependencies() {
   if (state.clock.pllEnabled || state.clock.hclkSource === 'PLL' || state.peripherals.uart0.clockSource === 'PLL' || state.peripherals.adc.clockSource === 'PLL') {
     if (caps.PLL) state.clock.pllEnabled = true;
     if (state.clock.pllSource === 'HXT') state.clock.enabled.HXT = true;
-    if (state.clock.pllSource === 'HIRC_DIV4') state.clock.enabled.HIRC = true;
+    if (state.clock.pllSource === 'HIRC') state.clock.enabled.HIRC = true;
   }
   if (state.peripherals.uart0.enabled && ['HIRC','HXT','LXT','LIRC'].includes(state.peripherals.uart0.clockSource)) state.clock.enabled[state.peripherals.uart0.clockSource] = true;
   if (state.peripherals.timer0.enabled && ['HIRC','HXT','LXT','LIRC'].includes(state.peripherals.timer0.clockSource)) state.clock.enabled[state.peripherals.timer0.clockSource] = true;
