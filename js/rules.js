@@ -1,126 +1,74 @@
 
-function getAllowedPllSources(mcu) {
-  if (!mcu) return ['HIRC_DIV4'];
-  if (mcu.name && /^M031(?!BT)/.test(mcu.name)) return ['HIRC_DIV4'];
-  const opts = mcu.clockCapabilities?.pllSourceOptions || ['HIRC_DIV4'];
-  return opts.length ? opts : ['HIRC_DIV4'];
-}
-
 function getSelectedAdcChannels(state, pinDb) {
-  return state.peripherals.adc.channelIndexes
-    .map((index) => pinDb.adcChannels[index])
-    .filter(Boolean)
-    .sort((a, b) => a.channel - b.channel);
+  return state.peripherals.adc.channelIndexes.map((index)=>pinDb.adcChannels[index]).filter(Boolean).sort((a,b)=>a.channel-b.channel);
 }
-
+function supportedOscillators(mcu) {
+  return mcu.clockCapabilities?.oscillators || {};
+}
+function baseClockNominal(state, mcu, source) {
+  const caps = mcu.clockCapabilities || {};
+  const map = {
+    HIRC: caps.hircNominal || 48000000,
+    HXT: caps.hxtNominal || 32000000,
+    LIRC: caps.lircNominal || 38400,
+    LXT: caps.lxtNominal || 32768,
+    MIRC: caps.mircNominal || 4000000,
+    PLL: state.clock.pllFreq || caps.pllNominal || mcu.maxHclk
+  };
+  return map[source] || mcu.maxHclk;
+}
 export function validateConfig(state, pinDb, mcuDb) {
-  const messages = [];
-  const errors = [];
-  const warnings = [];
-
-  const mcu = mcuDb.mcus.find((item) => item.name === state.mcu);
-  if (!mcu) {
-    errors.push('Geçerli bir MCU seçilmedi.');
-    return { valid: false, errors, warnings, messages };
+  const messages=[]; const errors=[]; const warnings=[];
+  const mcu = mcuDb.mcus.find((item)=>item.name===state.mcu);
+  if (!mcu) return { valid:false, errors:['Geçerli bir MCU seçilmedi.'], warnings, messages };
+  const osc = supportedOscillators(mcu);
+  for (const [name, enabled] of Object.entries(state.clock.enabled)) {
+    if (enabled && !osc[name]) errors.push(`${name} bu MCU tarafından desteklenmiyor.`);
   }
-
-  const allowedSources = mcu.clockSources || [];
-  if (!allowedSources.includes(state.clock.source)) {
-    errors.push(`Seçilen MCU için ${state.clock.source} clock kaynağı desteklenmiyor.`);
+  if (state.clock.pllEnabled && !osc.PLL) errors.push('Bu MCU PLL desteklemiyor.');
+  if (state.clock.hclkSource === 'PLL' && !osc.PLL) errors.push('HCLK kaynağı PLL seçildi ama MCU PLL desteklemiyor.');
+  if (state.clock.hclk > mcu.maxHclk) errors.push(`HCLK MCU sınırını aşıyor. Maksimum ${mcu.maxHclk} Hz`);
+  const needed = [];
+  if (state.clock.hclkSource !== 'PLL') needed.push(state.clock.hclkSource);
+  if (state.clock.pllEnabled || state.clock.hclkSource === 'PLL' || state.peripherals.uart0.clockSource==='PLL' || state.peripherals.adc.clockSource==='PLL') {
+    if (state.clock.pllSource === 'HXT') needed.push('HXT');
+    if (state.clock.pllSource === 'HIRC_DIV4') needed.push('HIRC');
   }
-
-  const allowedHclk = ((mcu.hclkOptionsBySource || {})[state.clock.source] || [mcu.maxHclk]);
-  if (!allowedHclk.includes(state.clock.hclk)) {
-    errors.push(`Seçilen MCU için ${state.clock.source} kaynağında HCLK ${state.clock.hclk} Hz desteklenmiyor.`);
+  if (state.peripherals.uart0.enabled && ['HIRC','HXT','LXT','LIRC'].includes(state.peripherals.uart0.clockSource)) needed.push(state.peripherals.uart0.clockSource);
+  if (state.peripherals.timer0.enabled && ['HIRC','HXT','LXT','LIRC'].includes(state.peripherals.timer0.clockSource)) needed.push(state.peripherals.timer0.clockSource);
+  if (state.peripherals.adc.enabled && ['HIRC','HXT'].includes(state.peripherals.adc.clockSource)) needed.push(state.peripherals.adc.clockSource);
+  for (const src of needed) {
+    if (!state.clock.enabled[src]) warnings.push(`${src} routing için gerekli. Kod üretiminde otomatik enable edilecek.`);
   }
-
-  if (state.clock.hclk > mcu.maxHclk) {
-    errors.push(`HCLK değeri MCU sınırını aşıyor. Maksimum: ${mcu.maxHclk} Hz`);
-  }
-
-  if (state.clock.source === 'PLL') {
-    const pllSources = getAllowedPllSources(mcu);
-    if (!pllSources.includes(state.clock.pllSource)) {
-      errors.push(`Seçilen MCU için PLL kaynağı ${state.clock.pllSource} desteklenmiyor.`);
-    }
-  }
-
-  warnings.push('Pin listesi henüz package bazlı filtrelenmiyor. Fiziksel pinleri ayrıca kontrol et.');
-
-  if (state.peripherals.timer0.enabled && Number(state.peripherals.timer0.frequency) <= 0) {
-    errors.push('Timer frekansı 0 veya negatif olamaz.');
-  }
-
   const usedPins = new Map();
-
   if (state.peripherals.uart0.enabled) {
     const uartSel = pinDb.uart0Options[state.peripherals.uart0.pinIndex];
-    if (!uartSel) {
-      errors.push('UART0 pin kombinasyonu geçersiz.');
-    } else {
-      uartSel.pins.forEach((pin) => usedPins.set(pin.pin, pin.signal));
-    }
+    if (!uartSel) errors.push('UART0 pin kombinasyonu geçersiz.');
+    else uartSel.pins.forEach((pin)=>usedPins.set(pin.pin, pin.signal));
   }
-
   if (state.peripherals.adc.enabled) {
     const adcSelected = getSelectedAdcChannels(state, pinDb);
-    if (adcSelected.length === 0) {
-      errors.push('ADC için en az bir kanal seçmelisin.');
-    }
-
-    adcSelected.forEach((adcSel) => {
-      if (usedPins.has(adcSel.pin)) {
-        errors.push(`Pin çakışması var: ${adcSel.pin} hem ${usedPins.get(adcSel.pin)} hem ADC için seçilmiş.`);
-      } else {
-        usedPins.set(adcSel.pin, `ADC_CH${adcSel.channel}`);
-      }
-    });
-
+    if (!adcSelected.length) errors.push('ADC için en az bir kanal seçmelisin.');
+    adcSelected.forEach((adcSel)=>{ if (usedPins.has(adcSel.pin)) errors.push(`Pin çakışması var: ${adcSel.pin}`); else usedPins.set(adcSel.pin, `ADC_CH${adcSel.channel}`); });
     if (state.peripherals.adc.trigger === 'stadc') {
       const stSel = pinDb.adcStOptions[state.peripherals.adc.stPinIndex];
-      if (!stSel) {
-        errors.push('ADC ST pin seçimi geçersiz.');
-      } else if (usedPins.has(stSel.pin)) {
-        errors.push(`Pin çakışması var: ${stSel.pin} hem ${usedPins.get(stSel.pin)} hem ADC_ST için seçilmiş.`);
-      } else {
-        usedPins.set(stSel.pin, 'ADC_ST');
-      }
-      warnings.push('External STADC seçildiğinde dönüşüm dış ST pininden tetiklenecek; ana döngüde software start çağrılmayacak.');
-    }
-
-    if (adcSelected.length > 1 && state.peripherals.adc.mode === 'single') {
-      warnings.push('Birden fazla ADC kanalı seçildiği için kod üretiminde Single Cycle Scan kullanılacak.');
+      if (!stSel) errors.push('ADC ST pin seçimi geçersiz.');
+      else if (usedPins.has(stSel.pin)) errors.push(`Pin çakışması var: ${stSel.pin}`); else usedPins.set(stSel.pin, 'ADC_ST');
     }
   }
-
-  if (!state.peripherals.uart0.enabled && !state.peripherals.timer0.enabled && !state.peripherals.adc.enabled) {
-    warnings.push('Hiç çevresel seçilmedi. Sadece temel clock iskeleti üretilecek.');
-  }
-
-  if (state.peripherals.uart0.enabled) {
-    const uartSel = pinDb.uart0Options[state.peripherals.uart0.pinIndex];
-    messages.push(`UART0 pin seti: ${uartSel.label}`);
-  }
-
+  if (state.peripherals.timer0.enabled && Number(state.peripherals.timer0.frequency) <= 0) errors.push('Timer frekansı 0 veya negatif olamaz.');
+  warnings.push('Pin listesi henüz package bazlı filtrelenmiyor. Fiziksel pinleri ayrıca kontrol et.');
+  messages.push(`MCU: ${mcu.displayName}`);
+  messages.push(`Enable clocklar: ${Object.entries(state.clock.enabled).filter(([,v])=>v).map(([k])=>k).join(', ') || 'Yok'}`);
+  messages.push(`HCLK: ${state.clock.hclkSource} / ${state.clock.hclk.toLocaleString('tr-TR')} Hz`);
+  messages.push(`PCLK0: HCLK/${state.clock.pclk0Div} / PCLK1: HCLK/${state.clock.pclk1Div}`);
+  if (state.clock.pllEnabled || state.clock.hclkSource === 'PLL') messages.push(`PLL: ${state.clock.pllSource} / ${(state.clock.pllFreq/1000000)} MHz`);
+  if (state.peripherals.uart0.enabled) messages.push(`UART0: ${state.peripherals.uart0.clockSource} / ${state.peripherals.uart0.baudrate}`);
+  if (state.peripherals.timer0.enabled) messages.push(`TIMER0: ${state.peripherals.timer0.clockSource} / ${state.peripherals.timer0.frequency} Hz`);
   if (state.peripherals.adc.enabled) {
     const adcSelected = getSelectedAdcChannels(state, pinDb);
-    messages.push(`ADC kanalları: ${adcSelected.map((item) => `CH${item.channel} (${item.pin})`).join(', ')}`);
-    messages.push('ADC sonuçları global değişkenlere yazılacak.');
-    if (state.peripherals.adc.trigger === 'stadc') {
-      const stSel = pinDb.adcStOptions[state.peripherals.adc.stPinIndex];
-      messages.push(`ADC ST pini: ${stSel.label} / koşul: ${state.peripherals.adc.stCondition}`);
-    }
+    messages.push(`ADC: ${state.peripherals.adc.clockSource} / div ${state.peripherals.adc.divider}`);
+    messages.push(`ADC kanalları: ${adcSelected.map((item)=>`CH${item.channel} (${item.pin})`).join(', ')}`);
   }
-
-  const available = Object.entries(mcu.clockCapabilities?.oscillators || {})
-    .filter(([, enabled]) => enabled)
-    .map(([name]) => name)
-    .join(', ');
-  messages.push(`MCU: ${mcu.name} / Paket: ${mcu.package}`);
-  messages.push(`Clock profili: ${mcu.clockProfile}`);
-  messages.push(`Mevcut kaynaklar: ${available}`);
-  const pllMsg = state.clock.source === 'PLL' ? ` / PLL kaynağı ${state.clock.pllSource}` : '';
-  messages.push(`Clock: ${state.clock.source}${pllMsg} / HCLK ${state.clock.hclk} Hz`);
-
-  return { valid: errors.length === 0, errors, warnings, messages };
+  return { valid: errors.length===0, errors, warnings, messages };
 }

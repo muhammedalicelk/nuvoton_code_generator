@@ -1,22 +1,34 @@
 export const defaultState = {
   mcu: 'M031FB0AE',
   clock: {
-    source: 'HIRC',
+    enabled: {
+      HIRC: true,
+      HXT: false,
+      LIRC: false,
+      LXT: false,
+      MIRC: false
+    },
     pllEnabled: false,
     pllSource: 'HIRC_DIV4',
-    hclk: 48000000
+    pllFreq: 48000000,
+    hclkSource: 'HIRC',
+    hclk: 48000000,
+    pclk0Div: 1,
+    pclk1Div: 1
   },
   peripherals: {
     uart0: {
       enabled: false,
       baudrate: 115200,
-      pinIndex: 0
+      pinIndex: 0,
+      clockSource: 'HIRC'
     },
     timer0: {
       enabled: false,
       mode: 'TIMER_PERIODIC_MODE',
       frequency: 1000,
-      interruptEnabled: true
+      interruptEnabled: true,
+      clockSource: 'PCLK0'
     },
     adc: {
       enabled: false,
@@ -24,11 +36,10 @@ export const defaultState = {
       channelIndexes: [2, 3],
       trigger: 'software',
       stPinIndex: 0,
-      stCondition: 'ADC_RISING_EDGE'
+      stCondition: 'ADC_RISING_EDGE',
+      clockSource: 'PCLK1',
+      divider: 128
     }
   }
 };
-
-export function cloneDefaultState() {
-  return structuredClone(defaultState);
-}
+export function cloneDefaultState() { return structuredClone(defaultState); }

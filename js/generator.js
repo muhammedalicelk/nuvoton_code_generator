@@ -13,95 +13,169 @@ function getCurrentMcu(state, mcuDb) {
   return mcuDb?.mcus?.find((item) => item.name === state.mcu) || null;
 }
 
-function getClockNominal(mcu, source) {
+function oscStatusMacro(source) {
+  return {
+    HIRC: 'CLK_STATUS_HIRCSTB_Msk',
+    HXT: 'CLK_STATUS_HXTSTB_Msk',
+    LIRC: 'CLK_STATUS_LIRCSTB_Msk',
+    LXT: 'CLK_STATUS_LXTSTB_Msk'
+  }[source];
+}
+
+function oscEnableMacro(source) {
+  return {
+    HIRC: 'CLK_PWRCTL_HIRCEN_Msk',
+    HXT: 'CLK_PWRCTL_HXTEN_Msk',
+    LIRC: 'CLK_PWRCTL_LIRCEN_Msk',
+    LXT: 'CLK_PWRCTL_LXTEN_Msk'
+  }[source];
+}
+
+function sourceToHclkMacro(source) {
+  return {
+    HIRC: 'CLK_CLKSEL0_HCLKSEL_HIRC',
+    HXT: 'CLK_CLKSEL0_HCLKSEL_HXT',
+    LIRC: 'CLK_CLKSEL0_HCLKSEL_LIRC',
+    LXT: 'CLK_CLKSEL0_HCLKSEL_LXT'
+  }[source];
+}
+
+function getClockNominal(state, mcu, source) {
   const caps = mcu?.clockCapabilities || {};
   const map = {
     HIRC: caps.hircNominal || 48000000,
     HXT: caps.hxtNominal || 32000000,
     LIRC: caps.lircNominal || 38400,
     LXT: caps.lxtNominal || 32768,
-    PLL: caps.pllNominal || mcu?.maxHclk || 48000000
+    MIRC: caps.mircNominal || 4000000,
+    PLL: state.clock.pllFreq || caps.pllNominal || mcu.maxHclk
   };
-  return map[source] || (mcu?.maxHclk || 48000000);
+  return map[source] || mcu.maxHclk;
 }
 
-function getHclkDivider(nominal, target) {
-  if (!nominal || !target) return 1;
-  const div = nominal / target;
-  if (Number.isInteger(div) && div >= 1 && div <= 16) return div;
-  return 1;
+function getDivider(nominal, target) {
+  const div = Math.max(1, Math.min(16, Math.round(nominal / target)));
+  return div;
+}
+
+function requiredEnabledSources(state) {
+  const set = new Set();
+  for (const [key, value] of Object.entries(state.clock.enabled)) {
+    if (value) set.add(key);
+  }
+
+  if (state.clock.hclkSource !== 'PLL') {
+    set.add(state.clock.hclkSource);
+  }
+
+  if (
+    state.clock.pllEnabled ||
+    state.clock.hclkSource === 'PLL' ||
+    state.peripherals.uart0.clockSource === 'PLL' ||
+    state.peripherals.adc.clockSource === 'PLL'
+  ) {
+    if (state.clock.pllSource === 'HXT') set.add('HXT');
+    if (state.clock.pllSource === 'HIRC_DIV4') set.add('HIRC');
+  }
+
+  if (state.peripherals.uart0.enabled && ['HIRC', 'HXT', 'LXT', 'LIRC'].includes(state.peripherals.uart0.clockSource)) {
+    set.add(state.peripherals.uart0.clockSource);
+  }
+
+  if (state.peripherals.timer0.enabled && ['HIRC', 'HXT', 'LXT', 'LIRC'].includes(state.peripherals.timer0.clockSource)) {
+    set.add(state.peripherals.timer0.clockSource);
+  }
+
+  if (state.peripherals.adc.enabled && ['HIRC', 'HXT'].includes(state.peripherals.adc.clockSource)) {
+    set.add(state.peripherals.adc.clockSource);
+  }
+
+  return [...set];
 }
 
 function buildClockCode(state, mcuDb) {
   const mcu = getCurrentMcu(state, mcuDb);
-  const source = state.clock.source;
   const lines = [];
+  const enabled = requiredEnabledSources(state);
 
-  if (source === 'HIRC' || source === 'PLL') {
-    lines.push('    /* Enable internal high-speed RC clock */');
-    lines.push('    CLK_EnableXtalRC(CLK_PWRCTL_HIRCEN_Msk);');
-    lines.push('    CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);');
+  lines.push(`    /* User-enabled clocks: ${enabled.join(', ') || 'none'} */`);
+
+  enabled.forEach((source) => {
+    if (!oscEnableMacro(source)) return;
+    lines.push(`    /* Enable ${source} */`);
+    lines.push(`    CLK_EnableXtalRC(${oscEnableMacro(source)});`);
+    lines.push(`    CLK_WaitClockReady(${oscStatusMacro(source)});`);
+  });
+
+  if (
+    state.clock.pllEnabled ||
+    state.clock.hclkSource === 'PLL' ||
+    state.peripherals.uart0.clockSource === 'PLL' ||
+    state.peripherals.adc.clockSource === 'PLL'
+  ) {
+    const pllSrc = state.clock.pllSource === 'HXT' ? 'CLK_PLLCTL_PLLSRC_HXT' : 'CLK_PLLCTL_PLLSRC_HIRC_DIV4';
+    lines.push('    /* Enable PLL */');
+    lines.push(`    CLK_EnablePLL(${pllSrc}, ${state.clock.pllFreq});`);
   }
 
-  if (source === 'HXT' || source === 'PLL') {
-    lines.push('    /* Enable external high-speed crystal */');
-    lines.push('    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);');
-    lines.push('    CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);');
-  }
+  const hNom = getClockNominal(state, mcu, state.clock.hclkSource);
+  const hDiv = getDivider(hNom, state.clock.hclk);
 
-  if (source === 'LIRC') {
-    lines.push('    /* Enable internal low-speed RC clock */');
-    lines.push('    CLK_EnableXtalRC(CLK_PWRCTL_LIRCEN_Msk);');
-    lines.push('    CLK_WaitClockReady(CLK_STATUS_LIRCSTB_Msk);');
-  }
-
-  if (source === 'LXT') {
-    lines.push('    /* Enable external low-speed crystal */');
-    lines.push('    CLK_EnableXtalRC(CLK_PWRCTL_LXTEN_Msk);');
-    lines.push('    CLK_WaitClockReady(CLK_STATUS_LXTSTB_Msk);');
-  }
-
-  if (source === 'PLL') {
-    const pllNominal = getClockNominal(mcu, 'PLL');
-    const div = getHclkDivider(pllNominal, state.clock.hclk);
-    lines.push('    /* Configure PLL and switch HCLK to PLL */');
-    lines.push(`    CLK_EnablePLL(CLK_PLLCTL_PLLSRC_HXT, ${pllNominal});`);
-    lines.push(`    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_PLL, CLK_CLKDIV0_HCLK(${div}));`);
+  if (state.clock.hclkSource === 'PLL') {
+    lines.push(`    CLK_SetHCLK(CLK_CLKSEL0_HCLKSEL_PLL, CLK_CLKDIV0_HCLK(${hDiv}));`);
   } else {
-    const nominal = getClockNominal(mcu, source);
-    const div = getHclkDivider(nominal, state.clock.hclk);
-    const sourceMap = {
-      HIRC: 'CLK_CLKSEL0_HCLKSEL_HIRC',
-      HXT: 'CLK_CLKSEL0_HCLKSEL_HXT',
-      LIRC: 'CLK_CLKSEL0_HCLKSEL_LIRC',
-      LXT: 'CLK_CLKSEL0_HCLKSEL_LXT'
-    };
-    lines.push(`    /* Switch HCLK source to ${source} */`);
-    lines.push(`    CLK_SetHCLK(${sourceMap[source]}, CLK_CLKDIV0_HCLK(${div}));`);
+    lines.push(`    CLK_SetHCLK(${sourceToHclkMacro(state.clock.hclkSource)}, CLK_CLKDIV0_HCLK(${hDiv}));`);
   }
 
-  if (state.peripherals.adc.enabled) {
-    lines.push('    /* ADC için APB divider = 1 */');
-    lines.push('    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV1 | CLK_PCLKDIV_APB1DIV_DIV1);');
-  }
-
+  lines.push(`    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV${state.clock.pclk0Div} | CLK_PCLKDIV_APB1DIV_DIV${state.clock.pclk1Div});`);
   lines.push('    SystemCoreClockUpdate();');
   return lines.join('\n');
+}
+
+function moduleClockLine(module, source, divider = 1) {
+  const map = {
+    UART0: {
+      HXT: 'CLK_CLKSEL1_UART0SEL_HXT',
+      PLL: 'CLK_CLKSEL1_UART0SEL_PLL',
+      LXT: 'CLK_CLKSEL1_UART0SEL_LXT',
+      HIRC: 'CLK_CLKSEL1_UART0SEL_HIRC',
+      PCLK0: 'CLK_CLKSEL1_UART0SEL_PCLK0',
+      LIRC: 'CLK_CLKSEL1_UART0SEL_LIRC',
+      div: `CLK_CLKDIV0_UART0(${divider})`
+    },
+    TMR0: {
+      HXT: 'CLK_CLKSEL1_TMR0SEL_HXT',
+      LXT: 'CLK_CLKSEL1_TMR0SEL_LXT',
+      PCLK0: 'CLK_CLKSEL1_TMR0SEL_PCLK0',
+      LIRC: 'CLK_CLKSEL1_TMR0SEL_LIRC',
+      HIRC: 'CLK_CLKSEL1_TMR0SEL_HIRC',
+      div: '0'
+    },
+    ADC: {
+      HXT: 'CLK_CLKSEL2_ADCSEL_HXT',
+      PLL: 'CLK_CLKSEL2_ADCSEL_PLL',
+      PCLK1: 'CLK_CLKSEL2_ADCSEL_PCLK1',
+      HIRC: 'CLK_CLKSEL2_ADCSEL_HIRC',
+      div: `CLK_CLKDIV0_ADC(${divider})`
+    }
+  };
+  const cfg = map[module];
+  return `    CLK_SetModuleClock(${module}_MODULE, ${cfg[source]}, ${cfg.div});`;
 }
 
 function buildModuleClockCode(state) {
   const lines = [];
   if (state.peripherals.uart0.enabled) {
     lines.push('    CLK_EnableModuleClock(UART0_MODULE);');
-    lines.push('    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART0SEL_HIRC, CLK_CLKDIV0_UART0(1));');
+    lines.push(moduleClockLine('UART0', state.peripherals.uart0.clockSource, 1));
   }
   if (state.peripherals.timer0.enabled) {
     lines.push('    CLK_EnableModuleClock(TMR0_MODULE);');
-    lines.push('    CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0SEL_HCLK, 0);');
+    lines.push(moduleClockLine('TMR0', state.peripherals.timer0.clockSource, 1));
   }
   if (state.peripherals.adc.enabled) {
     lines.push('    CLK_EnableModuleClock(ADC_MODULE);');
-    lines.push('    CLK_SetModuleClock(ADC_MODULE, CLK_CLKSEL2_ADCSEL_PCLK1, CLK_CLKDIV0_ADC(128));');
+    lines.push(moduleClockLine('ADC', state.peripherals.adc.clockSource, state.peripherals.adc.divider));
   }
   return lines.join('\n') || '    /* No module clock selected */';
 }
@@ -125,15 +199,10 @@ function buildMfpGroups(state, pinDb) {
   }
 
   if (state.peripherals.adc.enabled) {
-    getSelectedAdcChannels(state, pinDb).forEach((adcSel) => {
-      addPinAssignment(groups, adcSel.register, adcSel.mask, adcSel.value);
-    });
-
+    getSelectedAdcChannels(state, pinDb).forEach((adcSel) => addPinAssignment(groups, adcSel.register, adcSel.mask, adcSel.value));
     if (state.peripherals.adc.trigger === 'stadc') {
       const stSel = getSelectedStPin(state, pinDb);
-      if (stSel) {
-        addPinAssignment(groups, stSel.register, stSel.mask, stSel.value);
-      }
+      if (stSel) addPinAssignment(groups, stSel.register, stSel.mask, stSel.value);
     }
   }
 
@@ -155,8 +224,7 @@ function buildMfpCode(state, pinDb) {
   const lines = [];
 
   if (groups.size === 0) {
-    lines.push('    /* No peripheral pin configuration selected */');
-    return lines.join('\n');
+    return '    /* No peripheral pin configuration selected */';
   }
 
   for (const [registerName, group] of groups.entries()) {
@@ -179,6 +247,18 @@ function buildMfpCode(state, pinDb) {
   return lines.join('\n');
 }
 
+function buildFunctionPrototypes(state) {
+  const lines = ['void SYS_Init(void);'];
+  if (state.peripherals.uart0.enabled) lines.push('void UART0_Init(void);');
+  if (state.peripherals.timer0.enabled) lines.push('void TIMER0_Init(void);');
+  if (state.peripherals.adc.enabled) {
+    lines.push('void ADC0_Init(void);');
+    if (state.peripherals.adc.trigger === 'software') lines.push('void ADC0_Read(void);');
+    lines.push('void ADC_IRQHandler(void);');
+  }
+  return lines.join('\n');
+}
+
 function buildInitCalls(state) {
   const lines = [];
   if (state.peripherals.uart0.enabled) lines.push('    UART0_Init();');
@@ -187,39 +267,21 @@ function buildInitCalls(state) {
   return lines.join('\n') || '    /* No peripheral init call */';
 }
 
-function buildFunctionPrototypes(state) {
-  const lines = ['void SYS_Init(void);'];
-  if (state.peripherals.uart0.enabled) lines.push('void UART0_Init(void);');
-  if (state.peripherals.timer0.enabled) lines.push('void TIMER0_Init(void);');
-  if (state.peripherals.adc.enabled) {
-    lines.push('void ADC0_Init(void);');
-    if (state.peripherals.adc.trigger === 'software') {
-      lines.push('void ADC0_Read(void);');
-    }
-    lines.push('void ADC_IRQHandler(void);');
-  }
-  return lines.join('\n');
-}
-
 function buildAdcGlobals(state, pinDb) {
   if (!state.peripherals.adc.enabled) return '';
   const lines = ['volatile uint32_t g_u32AdcIntFlag = 0;'];
-  getSelectedAdcChannels(state, pinDb).forEach((adcSel) => {
-    lines.push(`uint16_t g_u16AdcCH${adcSel.channel} = 0;`);
-  });
+  getSelectedAdcChannels(state, pinDb).forEach((adcSel) => lines.push(`uint16_t g_u16AdcCH${adcSel.channel} = 0;`));
   return lines.join('\n');
 }
 
 function buildAdcModeMacro(state, pinDb) {
   const selected = getSelectedAdcChannels(state, pinDb);
   if (selected.length > 1) return 'ADC_ADCR_ADMD_SINGLE_CYCLE';
-  if (state.peripherals.adc.mode === 'single') return 'ADC_ADCR_ADMD_SINGLE';
-  return 'ADC_ADCR_ADMD_SINGLE_CYCLE';
+  return state.peripherals.adc.mode === 'single' ? 'ADC_ADCR_ADMD_SINGLE' : 'ADC_ADCR_ADMD_SINGLE_CYCLE';
 }
 
 function buildAdcChannelMask(state, pinDb) {
-  const selected = getSelectedAdcChannels(state, pinDb);
-  return selected.map((adcSel) => `BIT${adcSel.channel}`).join(' | ');
+  return getSelectedAdcChannels(state, pinDb).map((adcSel) => `BIT${adcSel.channel}`).join(' | ');
 }
 
 function buildAdcReadAssignments(state, pinDb, indent = '    ') {
@@ -245,35 +307,32 @@ function buildFunctionBodies(state, pinDb, mcuDb) {
   }
 
   if (state.peripherals.timer0.enabled) {
-    const intrLines = state.peripherals.timer0.interruptEnabled
+    const intr = state.peripherals.timer0.interruptEnabled
       ? '    TIMER_EnableInt(TIMER0);\n    NVIC_EnableIRQ(TMR0_IRQn);'
       : '    /* Interrupt disabled by user */';
-    sections.push(`void TIMER0_Init(void)\n{\n    TIMER_Open(TIMER0, ${state.peripherals.timer0.mode}, ${Number(state.peripherals.timer0.frequency)});\n${intrLines}\n    TIMER_Start(TIMER0);\n}`);
+    sections.push(`void TIMER0_Init(void)\n{\n    TIMER_Open(TIMER0, ${state.peripherals.timer0.mode}, ${Number(state.peripherals.timer0.frequency)});\n${intr}\n    TIMER_Start(TIMER0);\n}`);
   }
 
   if (state.peripherals.adc.enabled) {
     const adcMask = buildAdcChannelMask(state, pinDb);
     const adcMode = buildAdcModeMacro(state, pinDb);
-    const hwTrigger = state.peripherals.adc.trigger === 'stadc'
+    const hw = state.peripherals.adc.trigger === 'stadc'
       ? `\n    ADC_EnableHWTrigger(ADC, ADC_ADCR_TRGS_STADC, ${state.peripherals.adc.stCondition});`
       : '';
-    sections.push(`void ADC0_Init(void)\n{\n    SYS_ResetModule(ADC_RST);\n    ADC_POWER_ON(ADC);\n    ADC_Open(ADC, ADC_ADCR_DIFFEN_SINGLE_END, ${adcMode}, ${adcMask});\n    ADC_CLR_INT_FLAG(ADC, ADC_ADF_INT);\n    ADC_ENABLE_INT(ADC, ADC_ADF_INT);\n    NVIC_EnableIRQ(ADC_IRQn);${hwTrigger}\n}`);
+    sections.push(`void ADC0_Init(void)\n{\n    SYS_ResetModule(ADC_RST);\n    ADC_POWER_ON(ADC);\n    ADC_Open(ADC, ADC_ADCR_DIFFEN_SINGLE_END, ${adcMode}, ${adcMask});\n    ADC_CLR_INT_FLAG(ADC, ADC_ADF_INT);\n    ADC_ENABLE_INT(ADC, ADC_ADF_INT);\n    NVIC_EnableIRQ(ADC_IRQn);${hw}\n}`);
 
     if (state.peripherals.adc.trigger === 'software') {
-      sections.push(`void ADC0_Read(void)\n{\n    g_u32AdcIntFlag = 0;\n    ADC_CLR_INT_FLAG(ADC, ADC_ADF_INT);\n    ADC_START_CONV(ADC);\n\n    while (g_u32AdcIntFlag == 0);\n\n${buildAdcReadAssignments(state, pinDb)}\n}`);
-      sections.push(`void ADC_IRQHandler(void)\n{\n    g_u32AdcIntFlag = 1;\n    ADC_CLR_INT_FLAG(ADC, ADC_ADF_INT);\n}`);
-    } else {
-      sections.push(`void ADC_IRQHandler(void)\n{\n${buildAdcReadAssignments(state, pinDb)}\n    g_u32AdcIntFlag = 1;\n    ADC_CLR_INT_FLAG(ADC, ADC_ADF_INT);\n}`);
+      sections.push(`void ADC0_Read(void)\n{\n    g_u32AdcIntFlag = 0;\n    ADC_CLR_INT_FLAG(ADC, ADC_ADF_INT);\n    ADC_START_CONV(ADC);\n    while (g_u32AdcIntFlag == 0)\n    {\n    }\n${buildAdcReadAssignments(state, pinDb)}\n}`);
     }
+
+    sections.push(`void ADC_IRQHandler(void)\n{\n    g_u32AdcIntFlag = 1;\n    ADC_CLR_INT_FLAG(ADC, ADC_ADF_INT);\n}`);
   }
 
   return sections.join('\n\n');
 }
 
 export function generateCode(state, pinDb, mcuDb) {
-  const mcu = mcuDb?.mcus?.find((item) => item.name === state.mcu);
-  const globals = buildAdcGlobals(state, pinDb);
-  const globalsBlock = globals ? `${globals}\n\n` : '';
-  const comment = mcu ? `/* ${mcu.name} / ${mcu.package} / Clock source: ${state.clock.source} */\n` : '';
-  return `${comment}#include <stdio.h>\n#include "NuMicro.h"\n\n${globalsBlock}${buildFunctionPrototypes(state)}\n\n${buildFunctionBodies(state, pinDb, mcuDb)}\n\nint main(void)\n{\n    SYS_Init();\n${buildInitCalls(state)}\n\n${buildMainLoop(state)}\n}\n`;
+  const mcu = getCurrentMcu(state, mcuDb);
+  const adcGlobals = buildAdcGlobals(state, pinDb);
+  return `#include <stdio.h>\n#include "NuMicro.h"\n\n/* Generated for ${mcu?.displayName || state.mcu} */\n${adcGlobals ? `\n${adcGlobals}\n` : '\n'}${buildFunctionPrototypes(state)}\n\n${buildFunctionBodies(state, pinDb, mcuDb)}\n\nint main(void)\n{\n    SYS_Init();\n${buildInitCalls(state)}\n\n${buildMainLoop(state)}\n\n    return 0;\n}\n`;
 }
