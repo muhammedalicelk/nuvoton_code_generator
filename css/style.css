@@ -46,7 +46,17 @@ pre { background:#020617; border:1px solid var(--border); border-radius:12px; pa
 .checkbox-item { display:flex; align-items:center; gap:6px; font-size:0.95rem; }
 .meta-box { margin-top:10px; padding:10px 12px; border:1px solid rgba(255,255,255,0.12); border-radius:10px; background:rgba(255,255,255,0.03); font-size:13px; line-height:1.5; color:#cdd7e1; }
 .meta-box strong { color:#ffffff; }
-.compact-box { min-height: 44px; display:flex; align-items:center; }
+
+.hclk-grid { grid-template-columns: minmax(180px, 1fr) minmax(140px, 180px); align-items:start; }
+.hclk-info-group { grid-column: 1 / -1; }
+.compact-box { min-height: 44px; display:block; }
+.compact-box .clock-stat { display:block; margin-bottom:4px; }
+.compact-box .clock-stat:last-child { margin-bottom:0; }
+@media (min-width: 980px) {
+  .hclk-grid { grid-template-columns: minmax(180px, 1fr) minmax(140px, 180px) minmax(260px, 1.2fr); }
+  .hclk-info-group { grid-column:auto; }
+}
+
 .clock-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; }
 .clock-item { border:1px solid #2b3648; border-radius:12px; padding:12px; background:#0f1724; }
 .clock-name { font-weight:700; margin-bottom:6px; }

@@ -283,7 +283,7 @@ function renderDynamicOptions() {
   renderMcuMeta();
   const pclk0 = Math.floor(state.clock.hclk / state.clock.pclk0Div);
   const pclk1 = Math.floor(state.clock.hclk / state.clock.pclk1Div);
-  els.hclkInfo.innerHTML = `<strong>HCLK:</strong> ${state.clock.hclk.toLocaleString('tr-TR')} Hz<br><strong>PCLK0:</strong> ${pclk0.toLocaleString('tr-TR')} Hz<br><strong>PCLK1:</strong> ${pclk1.toLocaleString('tr-TR')} Hz`;
+  els.hclkInfo.innerHTML = `<span class="clock-stat"><strong>HCLK:</strong> ${state.clock.hclk.toLocaleString('tr-TR')} Hz</span><span class="clock-stat"><strong>PCLK0:</strong> ${pclk0.toLocaleString('tr-TR')} Hz</span><span class="clock-stat"><strong>PCLK1:</strong> ${pclk1.toLocaleString('tr-TR')} Hz</span>`;
 }
 function syncFormFromState() {
   renderDynamicOptions();
