@@ -56,7 +56,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -116,7 +116,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -176,7 +176,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -236,7 +236,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -296,7 +296,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -360,7 +360,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -431,7 +431,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -502,7 +502,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -573,7 +573,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -644,7 +644,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -715,7 +715,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -786,7 +786,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -857,7 +857,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -928,7 +928,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -1000,7 +1000,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -1072,7 +1072,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -1144,7 +1144,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -1216,7 +1216,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -1288,7 +1288,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -1360,7 +1360,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -1432,7 +1432,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -1504,7 +1504,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -1575,7 +1575,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     },
@@ -1646,7 +1646,7 @@
         "pllNominal": 48000000,
         "pllSourceOptions": [
           "HXT",
-          "HIRC_DIV4"
+          "HIRC"
         ]
       }
     }
