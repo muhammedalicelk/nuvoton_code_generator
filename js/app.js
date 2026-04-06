@@ -1,11 +1,12 @@
-import { cloneDefaultState } from './state.js?v=17';
-import { validateConfig } from './rules.js?v=17';
-import { generateCode } from './generator.js?v=17';
-import { setOptions, showMessages, downloadFile } from './ui.js?v=17';
+import { cloneDefaultState } from './state.js?v=19';
+import { validateConfig } from './rules.js?v=19';
+import { generateCode } from './generator.js?v=19';
+import { setOptions, showMessages, downloadFile } from './ui.js?v=19';
 
 const state = cloneDefaultState();
 let mcuDb;
 let pinDb;
+let partPinsDb;
 let generatedCode = '';
 
 const els = {
@@ -58,6 +59,29 @@ const PLL_FREQ_PRESETS = [48000000, 72000000, 96000000];
 
 function getCurrentMcu() { return mcuDb.mcus.find((item) => item.name === state.mcu) || mcuDb.mcus[0]; }
 function getOscCaps(mcu) { return mcu?.clockCapabilities?.oscillators || {}; }
+function getPartPins(partName) {
+  return new Set(partPinsDb?.parts?.[partName]?.pins || []);
+}
+function isPinAvailableForCurrentMcu(pin) {
+  return getPartPins(state.mcu).has(pin);
+}
+function filterIndexedOptions(options, pinExtractor) {
+  return options
+    .map((item, originalIndex) => ({ ...item, originalIndex }))
+    .filter((item) => {
+      const pins = pinExtractor(item);
+      return pins.every((pin) => isPinAvailableForCurrentMcu(pin));
+    });
+}
+function getFilteredUartOptions() {
+  return filterIndexedOptions(pinDb.uart0Options, (item) => item.pins.map((pin) => pin.pin));
+}
+function getFilteredAdcChannels() {
+  return filterIndexedOptions(pinDb.adcChannels, (item) => [item.pin]);
+}
+function getFilteredAdcStOptions() {
+  return filterIndexedOptions(pinDb.adcStOptions, (item) => [item.pin]);
+}
 function supportedBaseSources(mcu) { return ['HIRC','HXT','LIRC','LXT','MIRC'].filter((key) => getOscCaps(mcu)[key]); }
 function supportedHclkSources(mcu) { const list = [...supportedBaseSources(mcu)]; if (getOscCaps(mcu).PLL) list.push('PLL'); return list; }
 function pllSourceOptions(mcu) {
@@ -88,7 +112,6 @@ function hclkOptionsForSource(mcu, source) {
 }
 function moduleClockOptions(type, mcu) {
   const caps = getOscCaps(mcu);
-  const sourceEnabled = state.clock.enabled;
   if (type === 'uart0') {
     const opts = [];
     if (caps.HIRC) opts.push({value:'HIRC', label:'HIRC'});
@@ -96,7 +119,7 @@ function moduleClockOptions(type, mcu) {
     if (caps.LXT) opts.push({value:'LXT', label:'LXT'});
     if (caps.LIRC) opts.push({value:'LIRC', label:'LIRC'});
     opts.push({value:'PCLK0', label:'PCLK0'});
-    if (caps.PLL || getOscCaps(mcu).PLL) opts.push({value:'PLL', label:'PLL'});
+    if (caps.PLL) opts.push({value:'PLL', label:'PLL'});
     return opts;
   }
   if (type === 'timer0') {
@@ -111,13 +134,14 @@ function moduleClockOptions(type, mcu) {
   if (type === 'adc') {
     const opts=[];
     if (caps.HXT) opts.push({value:'HXT', label:'HXT'});
-    if (getOscCaps(mcu).PLL) opts.push({value:'PLL', label:'PLL'});
+    if (caps.PLL) opts.push({value:'PLL', label:'PLL'});
     opts.push({value:'PCLK1', label:'PCLK1'});
     if (caps.HIRC) opts.push({value:'HIRC', label:'HIRC'});
     return opts;
   }
   return [];
 }
+
 function renderBaseClocks() {
   const mcu = getCurrentMcu();
   const caps = mcu.clockCapabilities || {};
@@ -187,29 +211,40 @@ function renderMcuMeta() {
   const mcu = getCurrentMcu();
   const caps = mcu.clockCapabilities || {};
   const available = supportedHclkSources(mcu).join(', ');
-  els.mcuMeta.innerHTML = [`<div><strong>${mcu.displayName}</strong></div>`,`<div><strong>Paket:</strong> ${mcu.package}</div>`,`<div><strong>Maks. HCLK:</strong> ${mcu.maxHclk.toLocaleString('tr-TR')} Hz</div>`,`<div><strong>Kaynaklar:</strong> ${available}</div>`,`<div><strong>HXT:</strong> ${caps.hxtRange || '—'}</div>`].join('');
+  const pinCount = getPartPins(mcu.name).size;
+  els.mcuMeta.innerHTML = [
+    `<div><strong>${mcu.displayName}</strong></div>`,
+    `<div><strong>Paket:</strong> ${mcu.package}</div>`,
+    `<div><strong>Maks. HCLK:</strong> ${mcu.maxHclk.toLocaleString('tr-TR')} Hz</div>`,
+    `<div><strong>Kaynaklar:</strong> ${available}</div>`,
+    `<div><strong>HXT:</strong> ${caps.hxtRange || '—'}</div>`,
+    `<div><strong>Pin filtresi:</strong> ${pinCount} fiziksel pin</div>`
+  ].join('');
 }
 function renderAdcChannelList() {
   els.adcChannelList.innerHTML = '';
-  pinDb.adcChannels.forEach((channel, index) => {
+  const filteredChannels = getFilteredAdcChannels();
+  const validIndexes = filteredChannels.map((channel) => channel.originalIndex);
+  state.peripherals.adc.channelIndexes = state.peripherals.adc.channelIndexes.filter((index) => validIndexes.includes(index));
+  filteredChannels.forEach((channel) => {
     const label = document.createElement('label');
     label.className = 'checkbox-item';
     const input = document.createElement('input');
     input.type = 'checkbox';
-    input.checked = state.peripherals.adc.channelIndexes.includes(index);
+    input.checked = state.peripherals.adc.channelIndexes.includes(channel.originalIndex);
     input.addEventListener('change', () => {
       const set = new Set(state.peripherals.adc.channelIndexes);
-      if (input.checked) set.add(index); else set.delete(index);
+      if (input.checked) set.add(channel.originalIndex); else set.delete(channel.originalIndex);
       state.peripherals.adc.channelIndexes = [...set].sort((a,b)=>a-b);
       render();
     });
-    label.appendChild(input); label.append(` ${channel.label}`); els.adcChannelList.appendChild(label);
+    label.appendChild(input);
+    label.append(` ${channel.label}`);
+    els.adcChannelList.appendChild(label);
   });
 }
 function fillStaticOptions() {
   setOptions(els.mcuSelect, mcuDb.mcus.map((item) => ({ value: item.name, label: item.displayName })));
-  setOptions(els.uartPinSelect, pinDb.uart0Options, 'index', 'label');
-  setOptions(els.adcStPinSelect, pinDb.adcStOptions, 'index', 'label');
   setOptions(els.pllFreqSelect, PLL_FREQ_PRESETS.map(v=>({value:String(v), label:`${v/1000000} MHz`}))); 
 }
 function renderDynamicOptions() {
@@ -219,6 +254,18 @@ function renderDynamicOptions() {
   renderEnabledClockSummary();
   setOptions(els.pllSourceSelect, pllSourceOptions(mcu));
   els.pllEnableSelect.disabled = !getOscCaps(mcu).PLL;
+
+  const uartOptions = getFilteredUartOptions();
+  const stOptions = getFilteredAdcStOptions();
+  setOptions(els.uartPinSelect, uartOptions, 'originalIndex', 'label');
+  setOptions(els.adcStPinSelect, stOptions, 'originalIndex', 'label');
+  if (!uartOptions.some((item) => item.originalIndex === state.peripherals.uart0.pinIndex)) {
+    state.peripherals.uart0.pinIndex = uartOptions[0]?.originalIndex ?? 0;
+  }
+  if (!stOptions.some((item) => item.originalIndex === state.peripherals.adc.stPinIndex)) {
+    state.peripherals.adc.stPinIndex = stOptions[0]?.originalIndex ?? 0;
+  }
+
   const hclkSourceOpts = supportedHclkSources(mcu).filter((src)=> src !== 'PLL' || getOscCaps(mcu).PLL).map((src)=>({value:src,label:src}));
   setOptions(els.hclkSourceSelect, hclkSourceOpts);
   if (!hclkSourceOpts.map(x=>x.value).includes(state.clock.hclkSource)) state.clock.hclkSource = hclkSourceOpts[0]?.value || 'HIRC';
@@ -307,22 +354,31 @@ function attachEvents() {
   els.copyCodeBtn.addEventListener('click', async ()=>{ await navigator.clipboard.writeText(generatedCode); els.statusBadge.textContent='Kopyalandı'; setTimeout(()=>els.statusBadge.textContent='Hazır', 1400); });
   els.exportConfigBtn.addEventListener('click', ()=>downloadFile('config.json', JSON.stringify(state,null,2), 'application/json'));
   els.importConfigInput.addEventListener('change', async (event)=>{
-    const file = event.target.files?.[0]; if (!file) return; const imported = JSON.parse(await file.text()); Object.assign(state, imported); render();
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const imported = JSON.parse(await file.text());
+    Object.assign(state, imported);
+    render();
   });
   els.resetBtn.addEventListener('click', ()=>{ Object.assign(state, cloneDefaultState()); render(); });
 }
 function render() {
   syncFormFromState();
-  const result = validateConfig(state, pinDb, mcuDb);
+  const result = validateConfig(state, pinDb, mcuDb, partPinsDb);
   generatedCode = generateCode(state, pinDb, mcuDb);
   els.codePreview.textContent = generatedCode;
   showMessages(els.messages, result);
   els.statusBadge.textContent = result.valid ? 'Geçerli' : 'Hata var';
 }
 async function loadData() {
-  const [mcuRes, pinRes] = await Promise.all([fetch('./data/mcus.json'), fetch('./data/pins_m031fb.json')]);
+  const [mcuRes, pinRes, partPinRes] = await Promise.all([
+    fetch('./data/mcus.json'),
+    fetch('./data/pins_m031fb.json'),
+    fetch('./data/part_pins.json')
+  ]);
   mcuDb = await mcuRes.json();
   pinDb = await pinRes.json();
+  partPinsDb = await partPinRes.json();
 }
 async function init() { await loadData(); fillStaticOptions(); attachEvents(); render(); }
 init();
