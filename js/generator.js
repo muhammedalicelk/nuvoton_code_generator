@@ -58,6 +58,50 @@ function getDivider(nominal, target) {
   return div;
 }
 
+function computeExactPllctl(state, mcu) {
+  const source = state.clock.pllSource;
+  const target = Number(state.clock.pllFreq || 0);
+  const caps = mcu?.clockCapabilities || {};
+  const fin = source === 'HXT' ? Number(caps.hxtNominal || 32000000) : Number(caps.hircNominal || 48000000) / 4;
+  const srcBit = source === 'HXT' ? 0 : 1;
+  const preferredOutDividers = target >= 100000000 ? [2, 4, 1] : [4, 2, 1];
+  const candidates = [];
+
+  for (const no of preferredOutDividers) {
+    for (let nr = 2; nr <= 31; nr++) {
+      const numerator = target * nr * no;
+      if (numerator % fin !== 0) continue;
+      const nf = numerator / fin;
+      if (nf < 2 || nf > 511) continue;
+
+      const finDivNr = fin / nr;
+      const vco = (fin * nf) / nr;
+      if (!(finDivNr > 1600000 && finDivNr < 16000000)) continue;
+      if (!(vco >= 200000000 && vco <= 500000000)) continue;
+
+      const outdivBits = no === 1 ? 0 : (no === 2 ? 1 : 3);
+      const value = (srcBit << 19) | (outdivBits << 14) | ((nr - 2) << 9) | (nf - 2);
+      candidates.push({
+        no, nr, nf, value, real: (fin * nf) / nr / no
+      });
+    }
+  }
+
+  if (candidates.length === 0) return null;
+
+  candidates.sort((a, b) => {
+    if (a.no !== b.no) return a.no - b.no;
+    if (a.nr !== b.nr) return a.nr - b.nr;
+    return a.nf - b.nf;
+  });
+
+  return candidates[0];
+}
+
+function formatHexPllctl(value) {
+  return `0x${value.toString(16).toUpperCase().padStart(8, '0')}UL`;
+}
+
 function requiredEnabledSources(state) {
   const set = new Set();
   for (const [key, value] of Object.entries(state.clock.enabled)) {
@@ -113,9 +157,16 @@ function buildClockCode(state, mcuDb) {
     state.peripherals.uart0.clockSource === 'PLL' ||
     state.peripherals.adc.clockSource === 'PLL'
   ) {
-    const pllSrc = state.clock.pllSource === 'HXT' ? 'CLK_PLLCTL_PLLSRC_HXT' : 'CLK_PLLCTL_PLLSRC_HIRC_DIV4';
-    lines.push('    /* Enable PLL */');
-    lines.push(`    CLK_EnablePLL(${pllSrc}, ${state.clock.pllFreq});`);
+    const pll = computeExactPllctl(state, mcu);
+    lines.push('    /* Enable PLL using exact PLLCTL candidate */');
+    if (pll) {
+      lines.push(`    /* PLL source: ${state.clock.pllSource}, target: ${state.clock.pllFreq} Hz, NR=${pll.nr}, NF=${pll.nf}, NO=${pll.no} */`);
+      lines.push(`    CLK->PLLCTL = (CLK->PLLCTL & ~(0x000FFFFFUL)) | ${formatHexPllctl(pll.value)};`);
+    } else {
+      const pllSrc = state.clock.pllSource === 'HXT' ? 'CLK_PLLCTL_PLLSRC_HXT' : 'CLK_PLLCTL_PLLSRC_HIRC_DIV4';
+      lines.push(`    CLK_EnablePLL(${pllSrc}, ${state.clock.pllFreq});`);
+    }
+    lines.push('    CLK_WaitClockReady(CLK_STATUS_PLLSTB_Msk);');
   }
 
   const hNom = getClockNominal(state, mcu, state.clock.hclkSource);
